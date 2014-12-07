@@ -1,0 +1,40 @@
+Как запустить UML
+
+1. Скачиваем требуемую версию линукса (UML которого будем собирать) либо уже собранное ядро.
+Полезные ссылки:
+https://www.kernel.org/
+http://user-mode-linux.sourceforge.net/index.html
+http://uml.devloop.org.uk/
+
+2. Извлекаем файлы из архива, переходим в корень дерева линукса.
+tar -xz <download_linux_archive>
+
+3. Готовим конфигурацию для сборки UML:
+make defconfig ARCH=um
+
+и собираем:
+make ARCH=um
+
+Полезные ссылки:
+http://user-mode-linux.sourceforge.net/old/UserModeLinux-HOWTO.html#toc2
+http://www.landley.net/code/UML.html
+
+4. Скачиваем ФС, которую будем использовать в качестве корневой:
+wget http://fs.devloop.org.uk/filesystems/Debian-Squeeze/Debian-Squeeze-AMD64-root_fs.bz2
+
+Полезные ссылки:
+http://fs.devloop.org.uk/
+
+5. Запускаем:
+./linux ubda=./Debian-Squeeze-AMD64-root_fs mem=128m
+
+Полезные ссылки:
+http://user-mode-linux.sourceforge.net/index.html
+http://user-mode-linux.sourceforge.net/old/UserModeLinux-HOWTO.html#toc2
+http://www.landley.net/code/UML.html
+
+Логины: root (passw: <empty> | root), user (passw: user | <empty>)
+Выход: halt -f 
+       exit
+
+UML запущен, но что он умеет делать пока не понятно
