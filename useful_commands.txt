@@ -1,0 +1,14 @@
+mount <path_to_fs_image> <path_to_mount_point> -o loop
+
+mount
+
+ps uax
+
+cat /proc/devices
+cat /proc/filesystems
+ls /proc/<process_id>/fd
+ls -lh
+df #tmpfs
+
+/proc/interrupts
+dmesg | grep "Serial line"
