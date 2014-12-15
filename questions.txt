@@ -1,0 +1,5 @@
+TTY
+
+xterm
+
+sigio sigwinch, Dake's book, page 36
