@@ -38,3 +38,6 @@ http://www.landley.net/code/UML.html
        exit
 
 UML запущен, но что он умеет делать пока не понятно
+
+UNINSTALL
+make mrproper ARCH=um
