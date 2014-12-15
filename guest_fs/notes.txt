@@ -1,0 +1,10 @@
+How install libguestfs:
+  sudo apt-get install libguestfs-tools 
+  sudo apt-get install libguestfs-dev
+
+For launch with UML backend:
+  it is neccessary to instal "uml-utilities" (sudo apt-get install uml-utilities) because we need the "uml_mkcow" program to work around 'a bug in UML' 
+(
+  link: http://rwmj.wordpress.com/2013/08/11/experimental-user-mode-linux-backend-for-libguestfs/
+  link: http://thread.gmane.org/gmane.linux.uml.devel/13556
+)
