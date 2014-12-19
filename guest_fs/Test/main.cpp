@@ -58,6 +58,7 @@ int main (int argc, char *argv[])
     }
 
     guestfs_set_verbose(g, 1);
+    guestfs_set_backend(g, "uml");
     if (guestfs_set_hv(g, UML_KERNEL_PATH) == -1) {
         fprintf(stderr, "can't set UML as hypervisor");
         exit(EXIT_FAILURE);
