@@ -10,6 +10,8 @@ class TimeLogger
     vector< pair<system_clock::time_point, string> > tpMessages_;
 
 public:
+    TimeLogger();
+
     void start();
     void log(string const& message);
     void writeLogToFile(string const& filename);

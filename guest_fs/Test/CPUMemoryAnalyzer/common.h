@@ -7,7 +7,10 @@ using std::vector;
 #include <map>
 using std::map;
 
+#include <cstdio>
 #include <iostream>
+using std::ostream;
+using std::cin;
 using std::cout;
 using std::endl;
 
@@ -32,6 +35,9 @@ using std::qsort;
 
 #include <cassert>
 #include <memory.h>
+
+#include <cerrno>
+#include <sys/sysinfo.h>
 
 typedef std::chrono::system_clock c_clock;
 typedef std::chrono::system_clock::time_point time_point;

@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     logger.cpp \
     cpu_memory_analyzer_utils.cpp \
     testguestfs.cpp \
-    timelogger.cpp
+    timelogger.cpp \
+    memusage.cpp
 
 LIBS += -lprocps -lguestfs
 
@@ -20,4 +21,5 @@ HEADERS += \
     cpu_memory_analyzer_utils.h \
     testguestfs.h \
     timelogger.h \
-    common.h
+    common.h \
+    memsnapshot.h

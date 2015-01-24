@@ -173,6 +173,7 @@ void TestGuestFS::readFile(string const& remoteFilePath, string const& sourceFil
 {
     size_t fsize;
     char* file_content = guestfs_read_file(gfs_, remoteFilePath.c_str(), &fsize);
+    delete(file_content);
 //    bool status = checkFileContent(sourceFilePath, file_content);
 //    if (status) {
 //        logger_.log("OK");

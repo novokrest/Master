@@ -19,6 +19,8 @@ public:
     void add_new_proc(proc_t const& proc);
 
     unsigned long total_memory_new() const;
+
+    void write_report(string const& filename);
 };
 
 class procs_snapshot

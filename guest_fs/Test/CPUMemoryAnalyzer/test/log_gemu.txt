@@ -1,0 +1,193 @@
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8234 ms ] : END LAUNCHING BACKEND
+[ 8234 ms ] : START INSPECT DISKIMAGE
+[ 15726 ms ] : END INSPECT DISKIMAGE
+[ 15867 ms ] : START: BIG FILES TEST
+[ 20344 ms ] : END: BIG FILES TEST
+[ 20344 ms ] : START: SMALL FILES TEST
+[ 46616 ms ] : END: SMALL FILES TEST
+[ 46872 ms ] : START: CLOSE GUESTFS
+[ 46922 ms ] : END: CLOSE GUESTFS
+========================
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 9277 ms ] : END LAUNCHING BACKEND
+[ 9277 ms ] : START INSPECT DISKIMAGE
+[ 15429 ms ] : END INSPECT DISKIMAGE
+[ 15553 ms ] : START: BIG FILES TEST
+[ 18820 ms ] : END: BIG FILES TEST
+[ 18820 ms ] : START: SMALL FILES TEST
+[ 43160 ms ] : END: SMALL FILES TEST
+[ 43398 ms ] : START: CLOSE GUESTFS
+[ 43437 ms ] : END: CLOSE GUESTFS
+========================
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8071 ms ] : END LAUNCHING BACKEND
+[ 8071 ms ] : START INSPECT DISKIMAGE
+[ 14716 ms ] : END INSPECT DISKIMAGE
+[ 14827 ms ] : START: BIG FILES TEST
+[ 18041 ms ] : END: BIG FILES TEST
+[ 18041 ms ] : START: SMALL FILES TEST
+[ 42514 ms ] : END: SMALL FILES TEST
+[ 42754 ms ] : START: CLOSE GUESTFS
+[ 42795 ms ] : END: CLOSE GUESTFS
+========================
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8059 ms ] : END LAUNCHING BACKEND
+[ 8059 ms ] : START INSPECT DISKIMAGE
+[ 15784 ms ] : END INSPECT DISKIMAGE
+[ 15895 ms ] : START: BIG FILES TEST
+[ 19071 ms ] : END: BIG FILES TEST
+[ 19071 ms ] : START: SMALL FILES TEST
+[ 42623 ms ] : END: SMALL FILES TEST
+[ 42876 ms ] : START: CLOSE GUESTFS
+[ 42922 ms ] : END: CLOSE GUESTFS
+========================
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8115 ms ] : END LAUNCHING BACKEND
+[ 8115 ms ] : START INSPECT DISKIMAGE
+[ 14235 ms ] : END INSPECT DISKIMAGE
+[ 14373 ms ] : START: BIG FILES TEST
+[ 17596 ms ] : END: BIG FILES TEST
+[ 17596 ms ] : START: SMALL FILES TEST
+[ 41332 ms ] : END: SMALL FILES TEST
+[ 41576 ms ] : START: CLOSE GUESTFS
+[ 41611 ms ] : END: CLOSE GUESTFS
+========================
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8051 ms ] : END LAUNCHING BACKEND
+[ 8051 ms ] : START INSPECT DISKIMAGE
+[ 14514 ms ] : END INSPECT DISKIMAGE
+[ 14631 ms ] : START: BIG FILES TEST
+[ 17702 ms ] : END: BIG FILES TEST
+[ 17702 ms ] : START: SMALL FILES TEST
+[ 40670 ms ] : END: SMALL FILES TEST
+[ 40912 ms ] : START: CLOSE GUESTFS
+[ 40948 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 40959 ms ] : MEMORY_USAGE: 472764 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15485     pid:   15485    vm_memory(KiB):   1179692cmd: qemu-system-x86
+tid:   15486     pid:   15486    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15485     pid:   15485    vm_memory(KiB):   1179692cmd: qemu-system-x86
+tid:   15486     pid:   15486    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8125 ms ] : END LAUNCHING BACKEND
+[ 8125 ms ] : START INSPECT DISKIMAGE
+[ 14332 ms ] : END INSPECT DISKIMAGE
+[ 14456 ms ] : START: BIG FILES TEST
+[ 17569 ms ] : END: BIG FILES TEST
+[ 17569 ms ] : START: SMALL FILES TEST
+[ 40384 ms ] : END: SMALL FILES TEST
+[ 40633 ms ] : START: CLOSE GUESTFS
+[ 40670 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 40681 ms ] : MEMORY_USAGE: 510932 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15518     pid:   15518    vm_memory(KiB):   1179692cmd: qemu-system-x86
+tid:   15519     pid:   15519    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15518     pid:   15518    vm_memory(KiB):   1179692cmd: qemu-system-x86
+tid:   15519     pid:   15519    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND DEFAULT SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 8200 ms ] : END LAUNCHING BACKEND
+[ 8200 ms ] : START INSPECT DISKIMAGE
+[ 14434 ms ] : END INSPECT DISKIMAGE
+[ 14555 ms ] : START: BIG FILES TEST
+[ 17592 ms ] : END: BIG FILES TEST
+[ 17592 ms ] : START: SMALL FILES TEST
+[ 41180 ms ] : END: SMALL FILES TEST
+[ 41448 ms ] : START: CLOSE GUESTFS
+[ 41482 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 41494 ms ] : MEMORY_USAGE: 509636 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15540     pid:   15540    vm_memory(KiB):   1253424cmd: qemu-system-x86
+tid:   15541     pid:   15541    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+< REMOVED >
+tid:   12769     pid:   12769    vm_memory(KiB):         0cmd: kworker/u256:0
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   15540     pid:   15540    vm_memory(KiB):   1253424cmd: qemu-system-x86
+tid:   15541     pid:   15541    vm_memory(KiB):     99824cmd: CPUMemoryAnalyz
+tid:   15547     pid:   15547    vm_memory(KiB):         0cmd: kworker/u256:0
+< REMOVED >
+tid:   12769     pid:   12769    vm_memory(KiB):         0cmd: kworker/u256:0
+===========END DIFF PROCESSES INFO============
+
+********************************************
+

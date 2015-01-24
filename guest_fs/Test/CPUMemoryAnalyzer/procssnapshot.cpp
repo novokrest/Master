@@ -57,6 +57,20 @@ unsigned long procs_snapshot_diff::total_memory_new() const
     return total_memory(new_procs);
 }
 
+void procs_snapshot_diff::write_report(const string &filename)
+{
+    ofstream fout(filename.c_str(), std::ofstream::app);
+    fout << "===========DIFF PROCESSES INFO============" << endl;
+
+    fout << "< NEW >" << endl;
+    print_procs(new_procs, fout);
+    fout << "< REMOVED >" << endl;
+    print_procs(removed_procs, fout);
+
+    fout << "===========END DIFF PROCESSES INFO============" << endl;
+    fout << endl;
+}
+
 void procs_snapshot::create()
 {
     logger_.log("START: create processes snapshot");
@@ -93,5 +107,5 @@ void procs_snapshot::differ_from(const procs_snapshot& other_snapshot, vector<pr
 
 void procs_snapshot::print() const
 {
-    print_procs(procs_);
+    print_procs(procs_,cout);
 }

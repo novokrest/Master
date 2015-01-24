@@ -1,5 +1,10 @@
 #include "timelogger.h"
 
+TimeLogger::TimeLogger()
+{
+    start();
+}
+
 void TimeLogger::start()
 {
     tpMessages_.clear();
