@@ -512,3 +512,479 @@ tid:    7146     pid:    7146    vm_memory(KiB):     84156cmd: vmlinux
 
 ********************************************
 
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1468 ms ] : END LAUNCHING BACKEND
+[ 1468 ms ] : START INSPECT DISKIMAGE
+[ 3414 ms ] : END INSPECT DISKIMAGE
+[ 3470 ms ] : START: BIG FILES TEST
+[ 3470 ms ] : END: BIG FILES TEST
+[ 3470 ms ] : START: SMALL FILES TEST
+[ 19570 ms ] : END: SMALL FILES TEST
+[ 19641 ms ] : START: CLOSE GUESTFS
+[ 19664 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 19679 ms ] : MEMORY_USAGE: 161064 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    8733     pid:    8733    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8734     pid:    8734    vm_memory(KiB):     99844cmd: CPUMemoryAnalyz
+tid:    8741     pid:    8741    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8742     pid:    8742    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8743     pid:    8743    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8744     pid:    8744    vm_memory(KiB):     16288cmd: vmlinux
+tid:    8765     pid:    8765    vm_memory(KiB):     17880cmd: vmlinux
+tid:    8770     pid:    8770    vm_memory(KiB):     17480cmd: vmlinux
+tid:    8771     pid:    8771    vm_memory(KiB):     17608cmd: vmlinux
+tid:    8772     pid:    8772    vm_memory(KiB):     16552cmd: vmlinux
+tid:    8773     pid:    8773    vm_memory(KiB):     15584cmd: vmlinux
+tid:    8774     pid:    8774    vm_memory(KiB):     15592cmd: vmlinux
+tid:    8775     pid:    8775    vm_memory(KiB):     15588cmd: vmlinux
+tid:    8776     pid:    8776    vm_memory(KiB):     15592cmd: vmlinux
+tid:    8777     pid:    8777    vm_memory(KiB):     15592cmd: vmlinux
+tid:    8778     pid:    8778    vm_memory(KiB):     16560cmd: vmlinux
+tid:    8779     pid:    8779    vm_memory(KiB):     16564cmd: vmlinux
+tid:    8882     pid:    8882    vm_memory(KiB):     84148cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    8733     pid:    8733    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8734     pid:    8734    vm_memory(KiB):     99844cmd: CPUMemoryAnalyz
+tid:    8741     pid:    8741    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8742     pid:    8742    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8743     pid:    8743    vm_memory(KiB):    527892cmd: vmlinux
+tid:    8744     pid:    8744    vm_memory(KiB):     16288cmd: vmlinux
+tid:    8765     pid:    8765    vm_memory(KiB):     17880cmd: vmlinux
+tid:    8882     pid:    8882    vm_memory(KiB):     84156cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1530 ms ] : END LAUNCHING BACKEND
+[ 1530 ms ] : START INSPECT DISKIMAGE
+[ 3287 ms ] : END INSPECT DISKIMAGE
+[ 3332 ms ] : START: BIG FILES TEST
+[ 4623 ms ] : END: BIG FILES TEST
+[ 4623 ms ] : START: SMALL FILES TEST
+[ 20569 ms ] : END: SMALL FILES TEST
+[ 20622 ms ] : START: CLOSE GUESTFS
+[ 20666 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 20677 ms ] : MEMORY_USAGE: 286236 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9013     pid:    9013    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9014     pid:    9014    vm_memory(KiB):                99844 cmd: CPUMemoryAnalyz
+tid:    9021     pid:    9021    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9022     pid:    9022    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9023     pid:    9023    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9024     pid:    9024    vm_memory(KiB):                16336 cmd: vmlinux
+tid:    9045     pid:    9045    vm_memory(KiB):                18128 cmd: vmlinux
+tid:    9050     pid:    9050    vm_memory(KiB):                15948 cmd: vmlinux
+tid:    9051     pid:    9051    vm_memory(KiB):                15960 cmd: vmlinux
+tid:    9052     pid:    9052    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9053     pid:    9053    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9054     pid:    9054    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9055     pid:    9055    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9056     pid:    9056    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9057     pid:    9057    vm_memory(KiB):                15584 cmd: vmlinux
+tid:    9058     pid:    9058    vm_memory(KiB):                15584 cmd: vmlinux
+tid:    9059     pid:    9059    vm_memory(KiB):                16552 cmd: vmlinux
+tid:    9138     pid:    9138    vm_memory(KiB):                84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9013     pid:    9013    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9014     pid:    9014    vm_memory(KiB):                99844 cmd: CPUMemoryAnalyz
+tid:    9021     pid:    9021    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9022     pid:    9022    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9023     pid:    9023    vm_memory(KiB):               527892 cmd: vmlinux
+tid:    9024     pid:    9024    vm_memory(KiB):                16336 cmd: vmlinux
+tid:    9045     pid:    9045    vm_memory(KiB):                18128 cmd: vmlinux
+tid:    9138     pid:    9138    vm_memory(KiB):                84156 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1454 ms ] : END LAUNCHING BACKEND
+[ 1454 ms ] : START INSPECT DISKIMAGE
+[ 3296 ms ] : END INSPECT DISKIMAGE
+[ 3338 ms ] : START: BIG FILES TEST
+[ 4763 ms ] : END: BIG FILES TEST
+[ 4763 ms ] : START: SMALL FILES TEST
+[ 4763 ms ] : END: SMALL FILES TEST
+[ 4807 ms ] : START: CLOSE GUESTFS
+[ 4839 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 4851 ms ] : MEMORY_USAGE: 226772 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9273     pid:    9273    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9274     pid:    9274    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9281     pid:    9281    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9282     pid:    9282    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9283     pid:    9283    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9284     pid:    9284    vm_memory(KiB):      16232 cmd: vmlinux
+tid:    9305     pid:    9305    vm_memory(KiB):      17976 cmd: vmlinux
+tid:    9310     pid:    9310    vm_memory(KiB):      16552 cmd: vmlinux
+tid:    9311     pid:    9311    vm_memory(KiB):      17480 cmd: vmlinux
+tid:    9312     pid:    9312    vm_memory(KiB):      17608 cmd: vmlinux
+tid:    9313     pid:    9313    vm_memory(KiB):      16552 cmd: vmlinux
+tid:    9314     pid:    9314    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9315     pid:    9315    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9316     pid:    9316    vm_memory(KiB):      15580 cmd: vmlinux
+tid:    9317     pid:    9317    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9318     pid:    9318    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9319     pid:    9319    vm_memory(KiB):      15596 cmd: vmlinux
+tid:    9398     pid:    9398    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9273     pid:    9273    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9274     pid:    9274    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9281     pid:    9281    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9282     pid:    9282    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9283     pid:    9283    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9284     pid:    9284    vm_memory(KiB):      16232 cmd: vmlinux
+tid:    9305     pid:    9305    vm_memory(KiB):      17976 cmd: vmlinux
+tid:    9398     pid:    9398    vm_memory(KiB):      84156 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1472 ms ] : END LAUNCHING BACKEND
+[ 1472 ms ] : START INSPECT DISKIMAGE
+[ 3251 ms ] : END INSPECT DISKIMAGE
+[ 3302 ms ] : START: BIG FILES TEST
+[ 4748 ms ] : END: BIG FILES TEST
+[ 4748 ms ] : START: SMALL FILES TEST
+[ 4748 ms ] : END: SMALL FILES TEST
+[ 4801 ms ] : START: CLOSE GUESTFS
+[ 4831 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 4843 ms ] : MEMORY_USAGE: 227056 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9501     pid:    9501    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9502     pid:    9502    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9509     pid:    9509    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9510     pid:    9510    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9511     pid:    9511    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9512     pid:    9512    vm_memory(KiB):      16288 cmd: vmlinux
+tid:    9533     pid:    9533    vm_memory(KiB):      18104 cmd: vmlinux
+tid:    9538     pid:    9538    vm_memory(KiB):      15948 cmd: vmlinux
+tid:    9539     pid:    9539    vm_memory(KiB):      17608 cmd: vmlinux
+tid:    9540     pid:    9540    vm_memory(KiB):      16552 cmd: vmlinux
+tid:    9541     pid:    9541    vm_memory(KiB):      16552 cmd: vmlinux
+tid:    9542     pid:    9542    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9543     pid:    9543    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9544     pid:    9544    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9545     pid:    9545    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9546     pid:    9546    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9547     pid:    9547    vm_memory(KiB):      15596 cmd: vmlinux
+tid:    9624     pid:    9624    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9501     pid:    9501    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9502     pid:    9502    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9509     pid:    9509    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9510     pid:    9510    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9511     pid:    9511    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9512     pid:    9512    vm_memory(KiB):      16288 cmd: vmlinux
+tid:    9533     pid:    9533    vm_memory(KiB):      18104 cmd: vmlinux
+tid:    9624     pid:    9624    vm_memory(KiB):      84156 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1553 ms ] : END LAUNCHING BACKEND
+[ 1553 ms ] : START INSPECT DISKIMAGE
+[ 3330 ms ] : END INSPECT DISKIMAGE
+[ 3374 ms ] : START: BIG FILES TEST
+[ 3374 ms ] : END: BIG FILES TEST
+[ 3374 ms ] : START: SMALL FILES TEST
+[ 3374 ms ] : END: SMALL FILES TEST
+[ 3413 ms ] : START: CLOSE GUESTFS
+[ 3437 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 3452 ms ] : MEMORY_USAGE: 121696 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9747     pid:    9747    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9748     pid:    9748    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9755     pid:    9755    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9756     pid:    9756    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9757     pid:    9757    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9758     pid:    9758    vm_memory(KiB):      16232 cmd: vmlinux
+tid:    9779     pid:    9779    vm_memory(KiB):      18112 cmd: vmlinux
+tid:    9784     pid:    9784    vm_memory(KiB):      17480 cmd: vmlinux
+tid:    9785     pid:    9785    vm_memory(KiB):      15964 cmd: vmlinux
+tid:    9786     pid:    9786    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9787     pid:    9787    vm_memory(KiB):      15584 cmd: vmlinux
+tid:    9788     pid:    9788    vm_memory(KiB):      15588 cmd: vmlinux
+tid:    9789     pid:    9789    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9790     pid:    9790    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9791     pid:    9791    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9792     pid:    9792    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9793     pid:    9793    vm_memory(KiB):      16564 cmd: vmlinux
+tid:    9881     pid:    9881    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9747     pid:    9747    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9748     pid:    9748    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9755     pid:    9755    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9756     pid:    9756    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9757     pid:    9757    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9758     pid:    9758    vm_memory(KiB):      16232 cmd: vmlinux
+tid:    9779     pid:    9779    vm_memory(KiB):      18112 cmd: vmlinux
+tid:    9784     pid:    9784    vm_memory(KiB):      17480 cmd: vmlinux
+tid:    9785     pid:    9785    vm_memory(KiB):      15964 cmd: vmlinux
+tid:    9786     pid:    9786    vm_memory(KiB):      15592 cmd: vmlinux
+tid:    9787     pid:    9787    vm_memory(KiB):      15584 cmd: vmlinux
+tid:    9788     pid:    9788    vm_memory(KiB):      15588 cmd: vmlinux
+tid:    9789     pid:    9789    vm_memory(KiB):      16556 cmd: vmlinux
+tid:    9790     pid:    9790    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9791     pid:    9791    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9792     pid:    9792    vm_memory(KiB):      16560 cmd: vmlinux
+tid:    9793     pid:    9793    vm_memory(KiB):      16564 cmd: vmlinux
+tid:    9881     pid:    9881    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1387 ms ] : END LAUNCHING BACKEND
+[ 1387 ms ] : START INSPECT DISKIMAGE
+[ 3147 ms ] : END INSPECT DISKIMAGE
+[ 3215 ms ] : START: BIG FILES TEST
+[ 3215 ms ] : END: BIG FILES TEST
+[ 3215 ms ] : START: SMALL FILES TEST
+[ 3215 ms ] : END: SMALL FILES TEST
+[ 3254 ms ] : START: CLOSE GUESTFS
+[ 3277 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 3289 ms ] : MEMORY_USAGE: 119280 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9975     pid:    9975    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9976     pid:    9976    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9983     pid:    9983    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9984     pid:    9984    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9985     pid:    9985    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9986     pid:    9986    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10007     pid:   10007    vm_memory(KiB):      17936 cmd: vmlinux
+tid:   10012     pid:   10012    vm_memory(KiB):      15948 cmd: vmlinux
+tid:   10013     pid:   10013    vm_memory(KiB):      15964 cmd: vmlinux
+tid:   10014     pid:   10014    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10015     pid:   10015    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10016     pid:   10016    vm_memory(KiB):      16556 cmd: vmlinux
+tid:   10017     pid:   10017    vm_memory(KiB):      16556 cmd: vmlinux
+tid:   10018     pid:   10018    vm_memory(KiB):      15580 cmd: vmlinux
+tid:   10019     pid:   10019    vm_memory(KiB):      16560 cmd: vmlinux
+tid:   10020     pid:   10020    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10021     pid:   10021    vm_memory(KiB):      15596 cmd: vmlinux
+tid:   10098     pid:   10098    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:    9975     pid:    9975    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9976     pid:    9976    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:    9983     pid:    9983    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9984     pid:    9984    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9985     pid:    9985    vm_memory(KiB):     527892 cmd: vmlinux
+tid:    9986     pid:    9986    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10007     pid:   10007    vm_memory(KiB):      17936 cmd: vmlinux
+tid:   10012     pid:   10012    vm_memory(KiB):      15948 cmd: vmlinux
+tid:   10013     pid:   10013    vm_memory(KiB):      15964 cmd: vmlinux
+tid:   10014     pid:   10014    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10015     pid:   10015    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10016     pid:   10016    vm_memory(KiB):      16556 cmd: vmlinux
+tid:   10017     pid:   10017    vm_memory(KiB):      16556 cmd: vmlinux
+tid:   10018     pid:   10018    vm_memory(KiB):      15580 cmd: vmlinux
+tid:   10019     pid:   10019    vm_memory(KiB):      16560 cmd: vmlinux
+tid:   10020     pid:   10020    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10021     pid:   10021    vm_memory(KiB):      15596 cmd: vmlinux
+tid:   10098     pid:   10098    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1481 ms ] : END LAUNCHING BACKEND
+[ 1481 ms ] : START INSPECT DISKIMAGE
+[ 3229 ms ] : END INSPECT DISKIMAGE
+[ 3284 ms ] : START: BIG FILES TEST
+[ 4722 ms ] : END: BIG FILES TEST
+[ 4722 ms ] : START: SMALL FILES TEST
+[ 20558 ms ] : END: SMALL FILES TEST
+[ 20612 ms ] : START: CLOSE GUESTFS
+[ 20652 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 20664 ms ] : MEMORY_USAGE: 285084 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   10231     pid:   10231    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10232     pid:   10232    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:   10244     pid:   10244    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10245     pid:   10245    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10246     pid:   10246    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10247     pid:   10247    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10268     pid:   10268    vm_memory(KiB):      18008 cmd: vmlinux
+tid:   10273     pid:   10273    vm_memory(KiB):      17480 cmd: vmlinux
+tid:   10274     pid:   10274    vm_memory(KiB):      17608 cmd: vmlinux
+tid:   10275     pid:   10275    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10276     pid:   10276    vm_memory(KiB):      16552 cmd: vmlinux
+tid:   10277     pid:   10277    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10278     pid:   10278    vm_memory(KiB):      15588 cmd: vmlinux
+tid:   10279     pid:   10279    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10280     pid:   10280    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10281     pid:   10281    vm_memory(KiB):      16560 cmd: vmlinux
+tid:   10282     pid:   10282    vm_memory(KiB):      16564 cmd: vmlinux
+tid:   10359     pid:   10359    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   10231     pid:   10231    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10232     pid:   10232    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:   10244     pid:   10244    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10245     pid:   10245    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10246     pid:   10246    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10247     pid:   10247    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10268     pid:   10268    vm_memory(KiB):      18008 cmd: vmlinux
+tid:   10359     pid:   10359    vm_memory(KiB):      84156 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
+========================
+[ 0 ms ] : BACKEND UML SET
+[ 0 ms ] : DISK IMAGE ATTACHED
+[ 0 ms ] : START LAUNCHING BACKEND
+[ 1373 ms ] : END LAUNCHING BACKEND
+[ 1373 ms ] : START INSPECT DISKIMAGE
+[ 3105 ms ] : END INSPECT DISKIMAGE
+[ 3152 ms ] : START: BIG FILES TEST
+[ 4389 ms ] : END: BIG FILES TEST
+[ 4389 ms ] : START: SMALL FILES TEST
+[ 20307 ms ] : END: SMALL FILES TEST
+[ 20362 ms ] : START: CLOSE GUESTFS
+[ 20399 ms ] : END: CLOSE GUESTFS
+========================
+
+========================
+[ 20412 ms ] : MEMORY_USAGE: 286712 KiB
+========================
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   10463     pid:   10463    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10464     pid:   10464    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:   10471     pid:   10471    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10472     pid:   10472    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10473     pid:   10473    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10474     pid:   10474    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10495     pid:   10495    vm_memory(KiB):      18132 cmd: vmlinux
+tid:   10500     pid:   10500    vm_memory(KiB):      17480 cmd: vmlinux
+tid:   10501     pid:   10501    vm_memory(KiB):      17608 cmd: vmlinux
+tid:   10502     pid:   10502    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10503     pid:   10503    vm_memory(KiB):      15588 cmd: vmlinux
+tid:   10504     pid:   10504    vm_memory(KiB):      15588 cmd: vmlinux
+tid:   10505     pid:   10505    vm_memory(KiB):      15588 cmd: vmlinux
+tid:   10506     pid:   10506    vm_memory(KiB):      15592 cmd: vmlinux
+tid:   10507     pid:   10507    vm_memory(KiB):      16560 cmd: vmlinux
+tid:   10508     pid:   10508    vm_memory(KiB):      16560 cmd: vmlinux
+tid:   10509     pid:   10509    vm_memory(KiB):      16564 cmd: vmlinux
+tid:   10586     pid:   10586    vm_memory(KiB):      84148 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+===========DIFF PROCESSES INFO============
+< NEW >
+tid:   10463     pid:   10463    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10464     pid:   10464    vm_memory(KiB):      99844 cmd: CPUMemoryAnalyz
+tid:   10471     pid:   10471    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10472     pid:   10472    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10473     pid:   10473    vm_memory(KiB):     527892 cmd: vmlinux
+tid:   10474     pid:   10474    vm_memory(KiB):      16232 cmd: vmlinux
+tid:   10495     pid:   10495    vm_memory(KiB):      18132 cmd: vmlinux
+tid:   10586     pid:   10586    vm_memory(KiB):      84156 cmd: vmlinux
+< REMOVED >
+===========END DIFF PROCESSES INFO============
+
+********************************************
+
