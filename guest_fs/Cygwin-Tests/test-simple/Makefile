@@ -1,10 +1,6 @@
 CXX= g++
 CXXFLAGS= -c -std=c++11 -Wall -W
-LDFLAGS= -L/usr/local/lib -lguestfs 	\
-	-ltirpc \
-	-lintl \
-	-lxml2 -lz -llzma -liconv -lm \
-	-lpcre -lpcrecpp
+LDFLAGS= -L/usr/local/lib -lguestfs 
 INCPATH= -I.
 SOURCES = \
 	main.cpp
