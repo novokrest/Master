@@ -106,90 +106,90 @@
 //  return guestfs_add_domain_argv (g, dom, optargs);
 //}
 //
-//int
-//guestfs_add_drive_opts (guestfs_h *g,
-//                        const char *filename,
-//                        ...)
-//{
-//  va_list optargs;
-//
-//  int r;
-//
-//  va_start (optargs, filename);
-//  r = guestfs_add_drive_opts_va (g, filename, optargs);
-//  va_end (optargs);
-//
-//  return r;
-//}
-//
-//int
-//guestfs_add_drive_opts_va (guestfs_h *g,
-//                           const char *filename,
-//                           va_list args)
-//{
-//  struct guestfs_add_drive_opts_argv optargs_s;
-//  struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
-//  int i;
-//  uint64_t i_mask;
-//
-//  optargs_s.bitmask = 0;
-//
-//  while ((i = va_arg (args, int)) >= 0) {
-//    switch (i) {
-//    case GUESTFS_ADD_DRIVE_OPTS_READONLY:
-//      optargs_s.readonly = va_arg (args, int);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_FORMAT:
-//      optargs_s.format = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_IFACE:
-//      optargs_s.iface = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_NAME:
-//      optargs_s.name = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_LABEL:
-//      optargs_s.label = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_PROTOCOL:
-//      optargs_s.protocol = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_SERVER:
-//      optargs_s.server = va_arg (args, char *const *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_USERNAME:
-//      optargs_s.username = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_SECRET:
-//      optargs_s.secret = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_CACHEMODE:
-//      optargs_s.cachemode = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_DISCARD:
-//      optargs_s.discard = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_ADD_DRIVE_OPTS_COPYONREAD:
-//      optargs_s.copyonread = va_arg (args, int);
-//      break;
-//    default:
-//      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
-//             "add_drive", i);
-//      return -1;
-//    }
-//
-//    i_mask = UINT64_C(1) << i;
-//    if (optargs_s.bitmask & i_mask) {
-//      error (g, "%s: same optional argument specified more than once",
-//             "add_drive");
-//      return -1;
-//    }
-//    optargs_s.bitmask |= i_mask;
-//  }
-//
-//  return guestfs_add_drive_opts_argv (g, filename, optargs);
-//}
-//
+int
+guestfs_add_drive_opts (guestfs_h *g,
+                        const char *filename,
+                        ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, filename);
+  r = guestfs_add_drive_opts_va (g, filename, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_add_drive_opts_va (guestfs_h *g,
+                           const char *filename,
+                           va_list args)
+{
+  struct guestfs_add_drive_opts_argv optargs_s;
+  struct guestfs_add_drive_opts_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_ADD_DRIVE_OPTS_READONLY:
+      optargs_s.readonly = va_arg (args, int);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_FORMAT:
+      optargs_s.format = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_IFACE:
+      optargs_s.iface = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_NAME:
+      optargs_s.name = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_LABEL:
+      optargs_s.label = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_PROTOCOL:
+      optargs_s.protocol = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_SERVER:
+      optargs_s.server = va_arg (args, char *const *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_USERNAME:
+      optargs_s.username = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_SECRET:
+      optargs_s.secret = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_CACHEMODE:
+      optargs_s.cachemode = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_DISCARD:
+      optargs_s.discard = va_arg (args, const char *);
+      break;
+    case GUESTFS_ADD_DRIVE_OPTS_COPYONREAD:
+      optargs_s.copyonread = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "add_drive", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "add_drive");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_add_drive_opts_argv (g, filename, optargs);
+}
+
 //int
 //guestfs_add_drive (guestfs_h *g,
 //                   const char *filename)
