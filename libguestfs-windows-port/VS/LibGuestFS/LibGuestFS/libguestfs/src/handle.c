@@ -141,8 +141,8 @@ guestfs_create_flags (unsigned flags, ...)
     }
   }
 
-  if (!(flags & GUESTFS_CREATE_NO_ENVIRONMENT))
-    ignore_value (guestfs_parse_environment (g));
+  //if (!(flags & GUESTFS_CREATE_NO_ENVIRONMENT))
+  //  ignore_value (guestfs_parse_environment (g));
 
   if (!(flags & GUESTFS_CREATE_NO_CLOSE_ON_EXIT)) {
     g->close_on_exit = true;
@@ -152,7 +152,7 @@ guestfs_create_flags (unsigned flags, ...)
     g->next = handles;
     handles = g;
     if (!atexit_handler_set) {
-      atexit (close_handles);
+      //atexit (close_handles);
       atexit_handler_set = 1;
     }
     //gl_lock_unlock (handles_lock);
@@ -455,13 +455,13 @@ guestfs_create_flags (unsigned flags, ...)
 //  while (handles) guestfs_close (handles);
 //}
 //
-//int
-//guestfs__set_verbose (guestfs_h *g, int v)
-//{
-//  g->verbose = !!v;
-//  return 0;
-//}
-//
+int
+guestfs__set_verbose (guestfs_h *g, int v)
+{
+  g->verbose = !!v;
+  return 0;
+}
+
 //int
 //guestfs__get_verbose (guestfs_h *g)
 //{
@@ -671,29 +671,29 @@ guestfs_create_flags (unsigned flags, ...)
 //  return g->program;
 //}
 //
-//int
-//guestfs__set_backend (guestfs_h *g, const char *method)
-//{
-//  if (guestfs___set_backend (g, method) == -1) {
-//    error (g, "invalid backend: %s", method);
-//    return -1;
-//  }
-//
-//  return 0;
-//}
-//
+int
+guestfs__set_backend (guestfs_h *g, const char *method)
+{
+  if (guestfs___set_backend (g, method) == -1) {
+    error (g, "invalid backend: %s", method);
+    return -1;
+  }
+
+  return 0;
+}
+
 //int
 //guestfs__set_attach_method (guestfs_h *g, const char *method)
 //{
 //  return guestfs_set_backend (g, method);
 //}
 //
-//char *
-//guestfs__get_backend (guestfs_h *g)
-//{
-//  return safe_strdup (g, g->backend);
-//}
-//
+char *
+guestfs__get_backend (guestfs_h *g)
+{
+  return safe_strdup (g, g->backend);
+}
+
 //char *
 //guestfs__get_attach_method (guestfs_h *g)
 //{
