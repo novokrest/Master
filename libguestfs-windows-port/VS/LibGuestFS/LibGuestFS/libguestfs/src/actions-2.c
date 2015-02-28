@@ -413,164 +413,164 @@
 //  return r;
 //}
 //
-//GUESTFS_DLL_PUBLIC int
-//guestfs_add_drive_opts_argv (guestfs_h *g,
-//                             const char *filename,
-//                             const struct guestfs_add_drive_opts_argv *optargs)
-//{
-//  struct guestfs_add_drive_opts_argv optargs_null;
-//  if (!optargs) {
-//    optargs_null.bitmask = 0;
-//    optargs = &optargs_null;
-//  }
-//
-//  int trace_flag = g->trace;
-//  struct trace_buffer trace_buffer;
-//  int r;
-//
-//  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-//                                    "add_drive", 9);
-//  if (filename == NULL) {
-//    error (g, "%s: %s: parameter cannot be NULL",
-//           "add_drive_opts", "filename");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK) &&
-//      optargs->format == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "format");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK) &&
-//      optargs->iface == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "iface");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK) &&
-//      optargs->name == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "name");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK) &&
-//      optargs->label == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "label");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) &&
-//      optargs->protocol == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "protocol");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) &&
-//      optargs->server == NULL) {
-//    error (g, "%s: %s: optional list cannot be NULL",
-//           "add_drive_opts", "server");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) &&
-//      optargs->username == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "username");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK) &&
-//      optargs->secret == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "secret");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) &&
-//      optargs->cachemode == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "cachemode");
-//    return -1;
-//  }
-//  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) &&
-//      optargs->discard == NULL) {
-//    error (g, "%s: %s: optional parameter cannot be NULL",
-//           "add_drive_opts", "discard");
-//    return -1;
-//  }
-//
-//  if (optargs->bitmask & UINT64_C(0xfffffffffffff000)) {
-//    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
-//           "add_drive_opts", "add_drive_opts");
-//    return -1;
-//  }
-//
-//  if (trace_flag) {
-//    size_t i;
-//
-//    guestfs___trace_open (&trace_buffer);
-//    fprintf (trace_buffer.fp, "%s", "add_drive");
-//    fprintf (trace_buffer.fp, " \"%s\"", filename);
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "readonly", optargs->readonly ? "true" : "false");
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "format", optargs->format);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "iface", optargs->iface);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "name", optargs->name);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "label", optargs->label);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "protocol", optargs->protocol);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:", "server");
-//      for (i = 0; optargs->server[i] != NULL; ++i) {
-//        if (i > 0) fputc (' ', trace_buffer.fp);
-//        fputs (optargs->server[i], trace_buffer.fp);
-//      }
-//      fputc ('\"', trace_buffer.fp);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "username", optargs->username);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "secret", optargs->secret);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "discard", optargs->discard);
-//    }
-//    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK) {
-//      fprintf (trace_buffer.fp, " \"%s:%s\"", "copyonread", optargs->copyonread ? "true" : "false");
-//    }
-//    guestfs___trace_send_line (g, &trace_buffer);
-//  }
-//
-//  r = guestfs__add_drive_opts (g, filename, optargs);
-//
-//  if (r != -1) {
-//    if (trace_flag) {
-//      guestfs___trace_open (&trace_buffer);
-//      fprintf (trace_buffer.fp, "%s = ", "add_drive");
-//      fprintf (trace_buffer.fp, "%d", r);
-//      guestfs___trace_send_line (g, &trace_buffer);
-//    }
-//
-//  } else {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "add_drive", "-1");
-//  }
-//
-//  return r;
-//}
-//
+GUESTFS_DLL_PUBLIC int
+guestfs_add_drive_opts_argv (guestfs_h *g,
+                             const char *filename,
+                             const struct guestfs_add_drive_opts_argv *optargs)
+{
+  struct guestfs_add_drive_opts_argv optargs_null;
+  if (!optargs) {
+    optargs_null.bitmask = 0;
+    optargs = &optargs_null;
+  }
+
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  int r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "add_drive", 9);
+  if (filename == NULL) {
+    error (g, "%s: %s: parameter cannot be NULL",
+           "add_drive_opts", "filename");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK) &&
+      optargs->format == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "format");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK) &&
+      optargs->iface == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "iface");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK) &&
+      optargs->name == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "name");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK) &&
+      optargs->label == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "label");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) &&
+      optargs->protocol == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "protocol");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) &&
+      optargs->server == NULL) {
+    error (g, "%s: %s: optional list cannot be NULL",
+           "add_drive_opts", "server");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) &&
+      optargs->username == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "username");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK) &&
+      optargs->secret == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "secret");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) &&
+      optargs->cachemode == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "cachemode");
+    return -1;
+  }
+  if ((optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) &&
+      optargs->discard == NULL) {
+    error (g, "%s: %s: optional parameter cannot be NULL",
+           "add_drive_opts", "discard");
+    return -1;
+  }
+
+  if (optargs->bitmask & UINT64_C(0xfffffffffffff000)) {
+    error (g, "%s: unknown option in guestfs_%s_argv->bitmask (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+           "add_drive_opts", "add_drive_opts");
+    return -1;
+  }
+
+  if (trace_flag) {
+    size_t i;
+
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "add_drive");
+    fprintf (trace_buffer.fp, " \"%s\"", filename);
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "readonly", optargs->readonly ? "true" : "false");
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "format", optargs->format);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "iface", optargs->iface);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "name", optargs->name);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "label", optargs->label);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "protocol", optargs->protocol);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:", "server");
+      for (i = 0; optargs->server[i] != NULL; ++i) {
+        if (i > 0) fputc (' ', trace_buffer.fp);
+        fputs (optargs->server[i], trace_buffer.fp);
+      }
+      fputc ('\"', trace_buffer.fp);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "username", optargs->username);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "secret", optargs->secret);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "cachemode", optargs->cachemode);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "discard", optargs->discard);
+    }
+    if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK) {
+      fprintf (trace_buffer.fp, " \"%s:%s\"", "copyonread", optargs->copyonread ? "true" : "false");
+    }
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__add_drive_opts (g, filename, optargs);
+
+  if (r != -1) {
+    if (trace_flag) {
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "add_drive");
+      fprintf (trace_buffer.fp, "%d", r);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "add_drive", "-1");
+  }
+
+  return r;
+}
+
 //GUESTFS_DLL_PUBLIC char *
 //guestfs_inspect_get_windows_systemroot (guestfs_h *g,
 //                                        const char *root)
