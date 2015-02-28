@@ -1,70 +1,70 @@
-///* libguestfs
-// * Copyright (C) 2013 Red Hat Inc.
-// *
-// * This library is free software; you can redistribute it and/or
-// * modify it under the terms of the GNU Lesser General Public
-// * License as published by the Free Software Foundation; either
-// * version 2 of the License, or (at your option) any later version.
-// *
-// * This library is distributed in the hope that it will be useful,
-// * but WITHOUT ANY WARRANTY; without even the implied warranty of
-// * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// * Lesser General Public License for more details.
-// *
-// * You should have received a copy of the GNU Lesser General Public
-// * License along with this library; if not, write to the Free Software
-// * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-// */
-//
-///* Drives added are stored in an array in the handle.  Code here
-// * manages that array and the individual 'struct drive' data.
-// */
-//
-//#include <config.h>
-//
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <stdint.h>
-//#include <stdbool.h>
-//#include <string.h>
-//#include <inttypes.h>
+/* libguestfs
+ * Copyright (C) 2013 Red Hat Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+/* Drives added are stored in an array in the handle.  Code here
+ * manages that array and the individual 'struct drive' data.
+ */
+
+#include <config.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include <inttypes.h>
 //#include <unistd.h>
-//#include <fcntl.h>
+#include <fcntl.h>
 //#include <netdb.h>
 //#include <arpa/inet.h>
-//#include <assert.h>
-//#include <sys/types.h>
+#include <assert.h>
+#include <sys/types.h>
 //
 //#include <pcre.h>
 //
-//#include "c-ctype.h"
-//#include "ignore-value.h"
+#include "c-ctype.h"
+#include "ignore-value.h"
 //
-//#include "guestfs.h"
-//#include "guestfs-internal.h"
-//#include "guestfs-internal-actions.h"
+#include "guestfs.h"
+#include "guestfs-internal.h"
+#include "guestfs-internal-actions.h"
 //#include "guestfs_protocol.h"
-//
-///* Helper struct to hold all the data needed when creating a new
-// * drive.
-// */
-//struct drive_create_data {
-//  enum drive_protocol protocol;
-//  struct drive_server *servers;
-//  size_t nr_servers;
-//  const char *exportname;           /* File name or path to the resource. */
-//  const char *username;
-//  const char *secret;
-//  bool readonly;
-//  const char *format;
-//  const char *iface;
-//  const char *name;
-//  const char *disk_label;
-//  const char *cachemode;
-//  enum discard discard;
-//  bool copyonread;
-//};
-//
+
+/* Helper struct to hold all the data needed when creating a new
+ * drive.
+ */
+struct drive_create_data {
+  enum drive_protocol protocol;
+  struct drive_server *servers;
+  size_t nr_servers;
+  const char *exportname;           /* File name or path to the resource. */
+  const char *username;
+  const char *secret;
+  bool readonly;
+  const char *format;
+  const char *iface;
+  const char *name;
+  const char *disk_label;
+  const char *cachemode;
+  enum discard discard;
+  bool copyonread;
+};
+
 ///* Compile all the regular expressions once when the shared library is
 // * loaded.  PCRE is thread safe so we're supposedly OK here if
 // * multiple threads call into the libguestfs API functions below
@@ -765,220 +765,220 @@
 //  return n;
 //}
 //
-//int
-//guestfs__add_drive_opts (guestfs_h *g, const char *filename,
-//                         const struct guestfs_add_drive_opts_argv *optargs)
-//{
-//  struct drive_create_data data;
-//  const char *protocol;
-//  struct drive *drv;
-//  size_t i, drv_index;
-//
-//  data.nr_servers = 0;
-//  data.servers = NULL;
-//  data.exportname = filename;
-//
-//  data.readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
-//    ? optargs->readonly : false;
-//  data.format = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
-//    ? optargs->format : NULL;
-//  data.iface = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
-//    ? optargs->iface : NULL;
-//  data.name = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
-//    ? optargs->name : NULL;
-//  data.disk_label = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK
-//    ? optargs->label : NULL;
-//  protocol = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK
-//    ? optargs->protocol : "file";
-//  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
-//    ssize_t r = parse_servers (g, optargs->server, &data.servers);
-//    if (r == -1)
-//      return -1;
-//    data.nr_servers = r;
-//  }
-//  data.username = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK
-//    ? optargs->username : NULL;
-//  data.secret = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK
-//    ? optargs->secret : NULL;
-//  data.cachemode = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK
-//    ? optargs->cachemode : NULL;
-//
-//  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) {
-//    if (STREQ (optargs->discard, "disable"))
-//      data.discard = discard_disable;
-//    else if (STREQ (optargs->discard, "enable"))
-//      data.discard = discard_enable;
-//    else if (STREQ (optargs->discard, "besteffort"))
-//      data.discard = discard_besteffort;
-//    else {
-//      error (g, _("discard parameter must be 'disable', 'enable' or 'besteffort'"));
-//      free_drive_servers (data.servers, data.nr_servers);
-//      return -1;
-//    }
-//  }
-//  else
-//    data.discard = discard_disable;
-//
-//  data.copyonread =
-//    optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
-//    ? optargs->copyonread : false;
-//
-//  if (data.readonly && data.discard == discard_enable) {
-//    error (g, _("discard support cannot be enabled on read-only drives"));
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//
-//  if (data.format && !valid_format_iface (data.format)) {
-//    error (g, _("%s parameter is empty or contains disallowed characters"),
-//           "format");
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//  if (data.iface && !valid_format_iface (data.iface)) {
-//    error (g, _("%s parameter is empty or contains disallowed characters"),
-//           "iface");
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//  if (data.disk_label && !valid_disk_label (data.disk_label)) {
-//    error (g, _("label parameter is empty, too long, or contains disallowed characters"));
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//  if (data.cachemode &&
-//      !(STREQ (data.cachemode, "writeback") || STREQ (data.cachemode, "unsafe"))) {
-//    error (g, _("cachemode parameter must be 'writeback' (default) or 'unsafe'"));
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//
-//  if (STREQ (protocol, "file")) {
-//    if (data.servers != NULL) {
-//      error (g, _("you cannot specify a server with file-backed disks"));
-//      free_drive_servers (data.servers, data.nr_servers);
-//      return -1;
-//    }
-//    if (data.username != NULL) {
-//      error (g, _("you cannot specify a username with file-backed disks"));
-//      return -1;
-//    }
-//    if (data.secret != NULL) {
-//      error (g, _("you cannot specify a secret with file-backed disks"));
-//      return -1;
-//    }
-//
-//    if (STREQ (filename, "/dev/null"))
-//      drv = create_drive_dev_null (g, &data);
-//    else {
-//      /* We have to check for the existence of the file since that's
-//       * required by the API.
-//       */
-//      if (access (filename, R_OK) == -1) {
-//        perrorf (g, "%s", filename);
-//        return -1;
-//      }
-//
-//      drv = create_drive_file (g, &data);
-//    }
-//  }
-//  else if (STREQ (protocol, "ftp")) {
-//    data.protocol = drive_protocol_ftp;
-//    drv = create_drive_curl (g, &data);
-//  }
-//  else if (STREQ (protocol, "ftps")) {
-//    data.protocol = drive_protocol_ftps;
-//    drv = create_drive_curl (g, &data);
-//  }
-//  else if (STREQ (protocol, "gluster")) {
-//    data.protocol = drive_protocol_gluster;
-//    drv = create_drive_gluster (g, &data);
-//  }
-//  else if (STREQ (protocol, "http")) {
-//    data.protocol = drive_protocol_http;
-//    drv = create_drive_curl (g, &data);
-//  }
-//  else if (STREQ (protocol, "https")) {
-//    data.protocol = drive_protocol_https;
-//    drv = create_drive_curl (g, &data);
-//  }
-//  else if (STREQ (protocol, "iscsi")) {
-//    data.protocol = drive_protocol_iscsi;
-//    drv = create_drive_iscsi (g, &data);
-//  }
-//  else if (STREQ (protocol, "nbd")) {
-//    data.protocol = drive_protocol_nbd;
-//    drv = create_drive_nbd (g, &data);
-//  }
-//  else if (STREQ (protocol, "rbd")) {
-//    data.protocol = drive_protocol_rbd;
-//    drv = create_drive_rbd (g, &data);
-//  }
-//  else if (STREQ (protocol, "sheepdog")) {
-//    data.protocol = drive_protocol_sheepdog;
-//    drv = create_drive_sheepdog (g, &data);
-//  }
-//  else if (STREQ (protocol, "ssh")) {
-//    data.protocol = drive_protocol_ssh;
-//    drv = create_drive_ssh (g, &data);
-//  }
-//  else if (STREQ (protocol, "tftp")) {
-//    data.protocol = drive_protocol_tftp;
-//    drv = create_drive_curl (g, &data);
-//  }
-//  else {
-//    error (g, _("unknown protocol '%s'"), protocol);
-//    drv = NULL; /*FALLTHROUGH*/
-//  }
-//
-//  if (drv == NULL) {
-//    free_drive_servers (data.servers, data.nr_servers);
-//    return -1;
-//  }
-//
-//  /* Add the drive. */
-//  if (g->state == CONFIG) {
-//    /* Not hotplugging, so just add it to the handle. */
-//    add_drive_to_handle (g, drv); /* drv is now owned by the handle */
-//    return 0;
-//  }
-//
-//  /* ... else, hotplugging case. */
-//  if (!g->backend_ops->hot_add_drive) {
-//    error (g, _("the current backend does not support hotplugging drives"));
-//    free_drive_struct (drv);
-//    return -1;
-//  }
-//
-//  if (!drv->disk_label) {
-//    error (g, _("'label' is required when hotplugging drives"));
-//    free_drive_struct (drv);
-//    return -1;
-//  }
-//
-//  /* Get the first free index, or add it at the end. */
-//  drv_index = g->nr_drives;
-//  for (i = 0; i < g->nr_drives; ++i)
-//    if (g->drives[i] == NULL)
-//      drv_index = i;
-//
-//  /* Hot-add the drive. */
-//  if (g->backend_ops->hot_add_drive (g, g->backend_data,
-//                                     drv, drv_index) == -1) {
-//    free_drive_struct (drv);
-//    return -1;
-//  }
-//
-//  add_drive_to_handle_at (g, drv, drv_index);
-//  /* drv is now owned by the handle */
-//
-//  /* Call into the appliance to wait for the new drive to appear. */
-//  if (guestfs_internal_hot_add_drive (g, drv->disk_label) == -1)
-//    return -1;
-//
-//  return 0;
-//}
-//
+int
+guestfs__add_drive_opts (guestfs_h *g, const char *filename,
+                         const struct guestfs_add_drive_opts_argv *optargs)
+{
+  struct drive_create_data data;
+  const char *protocol;
+  struct drive *drv;
+  size_t i, drv_index;
+
+  data.nr_servers = 0;
+  data.servers = NULL;
+  data.exportname = filename;
+
+  data.readonly = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK
+    ? optargs->readonly : false;
+  data.format = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK
+    ? optargs->format : NULL;
+  data.iface = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK
+    ? optargs->iface : NULL;
+  data.name = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK
+    ? optargs->name : NULL;
+  data.disk_label = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK
+    ? optargs->label : NULL;
+  protocol = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK
+    ? optargs->protocol : "file";
+  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK) {
+    ssize_t r = parse_servers (g, optargs->server, &data.servers);
+    if (r == -1)
+      return -1;
+    data.nr_servers = r;
+  }
+  data.username = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK
+    ? optargs->username : NULL;
+  data.secret = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK
+    ? optargs->secret : NULL;
+  data.cachemode = optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK
+    ? optargs->cachemode : NULL;
+
+  if (optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK) {
+    if (STREQ (optargs->discard, "disable"))
+      data.discard = discard_disable;
+    else if (STREQ (optargs->discard, "enable"))
+      data.discard = discard_enable;
+    else if (STREQ (optargs->discard, "besteffort"))
+      data.discard = discard_besteffort;
+    else {
+      error (g, _("discard parameter must be 'disable', 'enable' or 'besteffort'"));
+      free_drive_servers (data.servers, data.nr_servers);
+      return -1;
+    }
+  }
+  else
+    data.discard = discard_disable;
+
+  data.copyonread =
+    optargs->bitmask & GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK
+    ? optargs->copyonread : false;
+
+  if (data.readonly && data.discard == discard_enable) {
+    error (g, _("discard support cannot be enabled on read-only drives"));
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+
+  if (data.format && !valid_format_iface (data.format)) {
+    error (g, _("%s parameter is empty or contains disallowed characters"),
+           "format");
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+  if (data.iface && !valid_format_iface (data.iface)) {
+    error (g, _("%s parameter is empty or contains disallowed characters"),
+           "iface");
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+  if (data.disk_label && !valid_disk_label (data.disk_label)) {
+    error (g, _("label parameter is empty, too long, or contains disallowed characters"));
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+  if (data.cachemode &&
+      !(STREQ (data.cachemode, "writeback") || STREQ (data.cachemode, "unsafe"))) {
+    error (g, _("cachemode parameter must be 'writeback' (default) or 'unsafe'"));
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+
+  if (STREQ (protocol, "file")) {
+    if (data.servers != NULL) {
+      error (g, _("you cannot specify a server with file-backed disks"));
+      free_drive_servers (data.servers, data.nr_servers);
+      return -1;
+    }
+    if (data.username != NULL) {
+      error (g, _("you cannot specify a username with file-backed disks"));
+      return -1;
+    }
+    if (data.secret != NULL) {
+      error (g, _("you cannot specify a secret with file-backed disks"));
+      return -1;
+    }
+
+    if (STREQ (filename, "/dev/null"))
+      drv = create_drive_dev_null (g, &data);
+    else {
+      /* We have to check for the existence of the file since that's
+       * required by the API.
+       */
+      if (access (filename, R_OK) == -1) {
+        perrorf (g, "%s", filename);
+        return -1;
+      }
+
+      drv = create_drive_file (g, &data);
+    }
+  }
+  else if (STREQ (protocol, "ftp")) {
+    data.protocol = drive_protocol_ftp;
+    drv = create_drive_curl (g, &data);
+  }
+  else if (STREQ (protocol, "ftps")) {
+    data.protocol = drive_protocol_ftps;
+    drv = create_drive_curl (g, &data);
+  }
+  else if (STREQ (protocol, "gluster")) {
+    data.protocol = drive_protocol_gluster;
+    drv = create_drive_gluster (g, &data);
+  }
+  else if (STREQ (protocol, "http")) {
+    data.protocol = drive_protocol_http;
+    drv = create_drive_curl (g, &data);
+  }
+  else if (STREQ (protocol, "https")) {
+    data.protocol = drive_protocol_https;
+    drv = create_drive_curl (g, &data);
+  }
+  else if (STREQ (protocol, "iscsi")) {
+    data.protocol = drive_protocol_iscsi;
+    drv = create_drive_iscsi (g, &data);
+  }
+  else if (STREQ (protocol, "nbd")) {
+    data.protocol = drive_protocol_nbd;
+    drv = create_drive_nbd (g, &data);
+  }
+  else if (STREQ (protocol, "rbd")) {
+    data.protocol = drive_protocol_rbd;
+    drv = create_drive_rbd (g, &data);
+  }
+  else if (STREQ (protocol, "sheepdog")) {
+    data.protocol = drive_protocol_sheepdog;
+    drv = create_drive_sheepdog (g, &data);
+  }
+  else if (STREQ (protocol, "ssh")) {
+    data.protocol = drive_protocol_ssh;
+    drv = create_drive_ssh (g, &data);
+  }
+  else if (STREQ (protocol, "tftp")) {
+    data.protocol = drive_protocol_tftp;
+    drv = create_drive_curl (g, &data);
+  }
+  else {
+    error (g, _("unknown protocol '%s'"), protocol);
+    drv = NULL; /*FALLTHROUGH*/
+  }
+
+  if (drv == NULL) {
+    free_drive_servers (data.servers, data.nr_servers);
+    return -1;
+  }
+
+  /* Add the drive. */
+  if (g->state == CONFIG) {
+    /* Not hotplugging, so just add it to the handle. */
+    add_drive_to_handle (g, drv); /* drv is now owned by the handle */
+    return 0;
+  }
+
+  /* ... else, hotplugging case. */
+  if (!g->backend_ops->hot_add_drive) {
+    error (g, _("the current backend does not support hotplugging drives"));
+    free_drive_struct (drv);
+    return -1;
+  }
+
+  if (!drv->disk_label) {
+    error (g, _("'label' is required when hotplugging drives"));
+    free_drive_struct (drv);
+    return -1;
+  }
+
+  /* Get the first free index, or add it at the end. */
+  drv_index = g->nr_drives;
+  for (i = 0; i < g->nr_drives; ++i)
+    if (g->drives[i] == NULL)
+      drv_index = i;
+
+  /* Hot-add the drive. */
+  if (g->backend_ops->hot_add_drive (g, g->backend_data,
+                                     drv, drv_index) == -1) {
+    free_drive_struct (drv);
+    return -1;
+  }
+
+  add_drive_to_handle_at (g, drv, drv_index);
+  /* drv is now owned by the handle */
+
+  /* Call into the appliance to wait for the new drive to appear. */
+  if (guestfs_internal_hot_add_drive (g, drv->disk_label) == -1)
+    return -1;
+
+  return 0;
+}
+
 //int
 //guestfs__add_drive_ro (guestfs_h *g, const char *filename)
 //{
