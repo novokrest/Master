@@ -50,7 +50,7 @@
 //extern char *guestfs__internal_test_rbufferouterr (guestfs_h *g, size_t *size_r);
 //extern int guestfs__internal_test_set_output (guestfs_h *g, const char *filename);
 //extern int guestfs__internal_test_close_output (guestfs_h *g);
-//extern int guestfs__launch (guestfs_h *g);
+extern int guestfs__launch (guestfs_h *g);
 //extern int guestfs__wait_ready (guestfs_h *g);
 //extern int guestfs__kill_subprocess (guestfs_h *g);
 //extern int guestfs__add_cdrom (guestfs_h *g, const char *filename);
@@ -100,7 +100,7 @@ extern int guestfs__set_verbose (guestfs_h *g, int verbose);
 //extern int guestfs__set_network (guestfs_h *g, int network);
 //extern int guestfs__get_network (guestfs_h *g);
 //extern char **guestfs__list_filesystems (guestfs_h *g);
-//extern int guestfs__add_drive_opts (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
+extern int guestfs__add_drive_opts (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
 //extern char *guestfs__inspect_get_windows_systemroot (guestfs_h *g, const char *root);
 //extern char **guestfs__inspect_get_roots (guestfs_h *g);
 //extern char **guestfs__debug_drives (guestfs_h *g);
