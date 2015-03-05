@@ -800,52 +800,52 @@ typedef void (*guestfs_event_callback) (
 //#define GUESTFS_HAVE_ADD_DRIVE 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_add_drive (guestfs_h *g, const char *filename);
 //
-//#define GUESTFS_HAVE_ADD_DRIVE_OPTS 1
-//#define GUESTFS_ADD_DRIVE_OPTS_READONLY 0
-//#define GUESTFS_ADD_DRIVE_OPTS_FORMAT 1
-//#define GUESTFS_ADD_DRIVE_OPTS_IFACE 2
-//#define GUESTFS_ADD_DRIVE_OPTS_NAME 3
-//#define GUESTFS_ADD_DRIVE_OPTS_LABEL 4
-//#define GUESTFS_ADD_DRIVE_OPTS_PROTOCOL 5
-//#define GUESTFS_ADD_DRIVE_OPTS_SERVER 6
-//#define GUESTFS_ADD_DRIVE_OPTS_USERNAME 7
-//#define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
-//#define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
-//#define GUESTFS_ADD_DRIVE_OPTS_DISCARD 10
-//#define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD 11
-//extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
-//extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
-//
-//struct guestfs_add_drive_opts_argv {
-//  uint64_t bitmask;
-//# define GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK (UINT64_C(1)<<0)
-//  int readonly;
-//# define GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK (UINT64_C(1)<<1)
-//  const char *format;
-//# define GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK (UINT64_C(1)<<2)
-//  const char *iface;
-//# define GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK (UINT64_C(1)<<3)
-//  const char *name;
-//# define GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK (UINT64_C(1)<<4)
-//  const char *label;
-//# define GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK (UINT64_C(1)<<5)
-//  const char *protocol;
-//# define GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK (UINT64_C(1)<<6)
-//  char *const *server;
-//# define GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK (UINT64_C(1)<<7)
-//  const char *username;
-//# define GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK (UINT64_C(1)<<8)
-//  const char *secret;
-//# define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK (UINT64_C(1)<<9)
-//  const char *cachemode;
-//# define GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK (UINT64_C(1)<<10)
-//  const char *discard;
-//# define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK (UINT64_C(1)<<11)
-//  int copyonread;
-//};
-//
-//extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
-//
+#define GUESTFS_HAVE_ADD_DRIVE_OPTS 1
+#define GUESTFS_ADD_DRIVE_OPTS_READONLY 0
+#define GUESTFS_ADD_DRIVE_OPTS_FORMAT 1
+#define GUESTFS_ADD_DRIVE_OPTS_IFACE 2
+#define GUESTFS_ADD_DRIVE_OPTS_NAME 3
+#define GUESTFS_ADD_DRIVE_OPTS_LABEL 4
+#define GUESTFS_ADD_DRIVE_OPTS_PROTOCOL 5
+#define GUESTFS_ADD_DRIVE_OPTS_SERVER 6
+#define GUESTFS_ADD_DRIVE_OPTS_USERNAME 7
+#define GUESTFS_ADD_DRIVE_OPTS_SECRET 8
+#define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE 9
+#define GUESTFS_ADD_DRIVE_OPTS_DISCARD 10
+#define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD 11
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts (guestfs_h *g, const char *filename, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_va (guestfs_h *g, const char *filename, va_list args);
+
+struct guestfs_add_drive_opts_argv {
+  uint64_t bitmask;
+# define GUESTFS_ADD_DRIVE_OPTS_READONLY_BITMASK (UINT64_C(1)<<0)
+  int readonly;
+# define GUESTFS_ADD_DRIVE_OPTS_FORMAT_BITMASK (UINT64_C(1)<<1)
+  const char *format;
+# define GUESTFS_ADD_DRIVE_OPTS_IFACE_BITMASK (UINT64_C(1)<<2)
+  const char *iface;
+# define GUESTFS_ADD_DRIVE_OPTS_NAME_BITMASK (UINT64_C(1)<<3)
+  const char *name;
+# define GUESTFS_ADD_DRIVE_OPTS_LABEL_BITMASK (UINT64_C(1)<<4)
+  const char *label;
+# define GUESTFS_ADD_DRIVE_OPTS_PROTOCOL_BITMASK (UINT64_C(1)<<5)
+  const char *protocol;
+# define GUESTFS_ADD_DRIVE_OPTS_SERVER_BITMASK (UINT64_C(1)<<6)
+  char *const *server;
+# define GUESTFS_ADD_DRIVE_OPTS_USERNAME_BITMASK (UINT64_C(1)<<7)
+  const char *username;
+# define GUESTFS_ADD_DRIVE_OPTS_SECRET_BITMASK (UINT64_C(1)<<8)
+  const char *secret;
+# define GUESTFS_ADD_DRIVE_OPTS_CACHEMODE_BITMASK (UINT64_C(1)<<9)
+  const char *cachemode;
+# define GUESTFS_ADD_DRIVE_OPTS_DISCARD_BITMASK (UINT64_C(1)<<10)
+  const char *discard;
+# define GUESTFS_ADD_DRIVE_OPTS_COPYONREAD_BITMASK (UINT64_C(1)<<11)
+  int copyonread;
+};
+
+extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const char *filename, const struct guestfs_add_drive_opts_argv *optargs);
+
 //#define GUESTFS_HAVE_ADD_DRIVE_RO 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_ro (guestfs_h *g, const char *filename);
 //
@@ -1261,21 +1261,21 @@ typedef void (*guestfs_event_callback) (
 //#define GUESTFS_DISK_CREATE_CLUSTERSIZE 4
 //extern GUESTFS_DLL_PUBLIC int guestfs_disk_create (guestfs_h *g, const char *filename, const char *format, int64_t size, ...);
 //extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_va (guestfs_h *g, const char *filename, const char *format, int64_t size, va_list args);
-//
-//struct guestfs_disk_create_argv {
-//  uint64_t bitmask;
-//# define GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK (UINT64_C(1)<<0)
-//  const char *backingfile;
-//# define GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK (UINT64_C(1)<<1)
-//  const char *backingformat;
-//# define GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK (UINT64_C(1)<<2)
-//  const char *preallocation;
-//# define GUESTFS_DISK_CREATE_COMPAT_BITMASK (UINT64_C(1)<<3)
-//  const char *compat;
-//# define GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK (UINT64_C(1)<<4)
-//  int clustersize;
-//};
-//
+
+struct guestfs_disk_create_argv {
+  uint64_t bitmask;
+# define GUESTFS_DISK_CREATE_BACKINGFILE_BITMASK (UINT64_C(1)<<0)
+  const char *backingfile;
+# define GUESTFS_DISK_CREATE_BACKINGFORMAT_BITMASK (UINT64_C(1)<<1)
+  const char *backingformat;
+# define GUESTFS_DISK_CREATE_PREALLOCATION_BITMASK (UINT64_C(1)<<2)
+  const char *preallocation;
+# define GUESTFS_DISK_CREATE_COMPAT_BITMASK (UINT64_C(1)<<3)
+  const char *compat;
+# define GUESTFS_DISK_CREATE_CLUSTERSIZE_BITMASK (UINT64_C(1)<<4)
+  int clustersize;
+};
+
 //extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_argv (guestfs_h *g, const char *filename, const char *format, int64_t size, const struct guestfs_disk_create_argv *optargs);
 //
 //#define GUESTFS_HAVE_DISK_FORMAT 1
@@ -1889,8 +1889,8 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
 //extern GUESTFS_DLL_PUBLIC int guestfs_kill_subprocess (guestfs_h *g)
 //  GUESTFS_DEPRECATED_BY ("shutdown");
 //
-//#define GUESTFS_HAVE_LAUNCH 1
-//extern GUESTFS_DLL_PUBLIC int guestfs_launch (guestfs_h *g);
+#define GUESTFS_HAVE_LAUNCH 1
+extern GUESTFS_DLL_PUBLIC int guestfs_launch (guestfs_h *g);
 //
 //#define GUESTFS_HAVE_LCHOWN 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_lchown (guestfs_h *g, int owner, int group, const char *path);
