@@ -20,6 +20,7 @@
 #define GUESTFS_INTERNAL_H_
 
 #include <stdbool.h>
+#include <WinSock2.h>
 //
 ////#include <libintl.h>
 ////
@@ -172,99 +173,99 @@ struct event {
   void *opaque2;
 };
 
-///* Drives added to the handle. */
-//enum drive_protocol {
-//  drive_protocol_file,
-//  drive_protocol_ftp,
-//  drive_protocol_ftps,
-//  drive_protocol_gluster,
-//  drive_protocol_http,
-//  drive_protocol_https,
-//  drive_protocol_iscsi,
-//  drive_protocol_nbd,
-//  drive_protocol_rbd,
-//  drive_protocol_sheepdog,
-//  drive_protocol_ssh,
-//  drive_protocol_tftp,
-//};
-//
-//enum drive_transport {
-//  drive_transport_none = 0,     /* no transport specified */
-//  drive_transport_tcp,          /* +tcp */
-//  drive_transport_unix,         /* +unix */
-//  /* XXX In theory gluster+rdma could be supported here, but
-//   * I have no idea what gluster+rdma URLs would look like.
-//   */
-//};
-//
-//struct drive_server {
-//  enum drive_transport transport;
-//
-//  /* This field is always non-NULL. */
-//  union {
-//    char *hostname;             /* hostname or IP address as a string */
-//    char *socket;               /* Unix domain socket */
-//  } u;
-//
-//  int port;                     /* port number */
-//};
-//
-//struct drive_source {
-//  enum drive_protocol protocol;
-//
-//  /* Format (eg. raw, qcow2).  NULL = autodetect. */
-//  char *format;
-//
-//  /* This field is always non-NULL.  It may be an empty string. */
-//  union {
-//    char *path;                 /* path to file (file) */
-//    char *exportname;           /* name of export (nbd) */
-//  } u;
-//
-//  /* For network transports, zero or more servers can be specified here.
-//   *
-//   * - for protocol "nbd": exactly one server
-//   */
-//  size_t nr_servers;
-//  struct drive_server *servers;
-//
-//  /* Optional username (may be NULL if not specified). */
-//  char *username;
-//  /* Optional secret (may be NULL if not specified). */
-//  char *secret;
-//};
-//
-//enum discard {
-//  discard_disable = 0,
-//  discard_enable,
-//  discard_besteffort,
-//};
-//
-///* There is one 'struct drive' per drive, including hot-plugged drives. */
-//struct drive {
-//  /* Original source of the drive, eg. file:..., http:... */
-//  struct drive_source src;
-//
-//  /* If the drive is readonly, then an overlay [a local file] is
-//   * created before launch to protect the original drive content, and
-//   * the filename is stored here.  Backends should open this file if
-//   * it is non-NULL, else consult the original source above.
-//   *
-//   * Note that the overlay is in a backend-specific format, probably
-//   * different from the source format.  eg. qcow2, UML COW.
-//   */
-//  char *overlay;
-//
-//  /* Various per-drive flags. */
-//  bool readonly;
-//  char *iface;
-//  char *name;
-//  char *disk_label;
-//  char *cachemode;
-//  enum discard discard;
-//  bool copyonread;
-//};
-//
+/* Drives added to the handle. */
+enum drive_protocol {
+  drive_protocol_file,
+  drive_protocol_ftp,
+  drive_protocol_ftps,
+  drive_protocol_gluster,
+  drive_protocol_http,
+  drive_protocol_https,
+  drive_protocol_iscsi,
+  drive_protocol_nbd,
+  drive_protocol_rbd,
+  drive_protocol_sheepdog,
+  drive_protocol_ssh,
+  drive_protocol_tftp,
+};
+
+enum drive_transport {
+  drive_transport_none = 0,     /* no transport specified */
+  drive_transport_tcp,          /* +tcp */
+  drive_transport_unix,         /* +unix */
+  /* XXX In theory gluster+rdma could be supported here, but
+   * I have no idea what gluster+rdma URLs would look like.
+   */
+};
+
+struct drive_server {
+  enum drive_transport transport;
+
+  /* This field is always non-NULL. */
+  union {
+    char *hostname;             /* hostname or IP address as a string */
+    char *socket;               /* Unix domain socket */
+  } u;
+
+  int port;                     /* port number */
+};
+
+struct drive_source {
+  enum drive_protocol protocol;
+
+  /* Format (eg. raw, qcow2).  NULL = autodetect. */
+  char *format;
+
+  /* This field is always non-NULL.  It may be an empty string. */
+  union {
+    char *path;                 /* path to file (file) */
+    char *exportname;           /* name of export (nbd) */
+  } u;
+
+  /* For network transports, zero or more servers can be specified here.
+   *
+   * - for protocol "nbd": exactly one server
+   */
+  size_t nr_servers;
+  struct drive_server *servers;
+
+  /* Optional username (may be NULL if not specified). */
+  char *username;
+  /* Optional secret (may be NULL if not specified). */
+  char *secret;
+};
+
+enum discard {
+  discard_disable = 0,
+  discard_enable,
+  discard_besteffort,
+};
+
+/* There is one 'struct drive' per drive, including hot-plugged drives. */
+struct drive {
+  /* Original source of the drive, eg. file:..., http:... */
+  struct drive_source src;
+
+  /* If the drive is readonly, then an overlay [a local file] is
+   * created before launch to protect the original drive content, and
+   * the filename is stored here.  Backends should open this file if
+   * it is non-NULL, else consult the original source above.
+   *
+   * Note that the overlay is in a backend-specific format, probably
+   * different from the source format.  eg. qcow2, UML COW.
+   */
+  char *overlay;
+
+  /* Various per-drive flags. */
+  bool readonly;
+  char *iface;
+  char *name;
+  char *disk_label;
+  char *cachemode;
+  enum discard discard;
+  bool copyonread;
+};
+
 ///* Extra hv parameters (from guestfs_config). */
 //struct hv_param {
 //  struct hv_param *next;
@@ -453,7 +454,7 @@ struct guestfs_h
    */
   int user_cancel;
 
-  //struct timeval launch_t;      /* The time that we called guestfs_launch. */
+  struct timeval launch_t;      /* The time that we called guestfs_launch. */
 
   /* Used by bindtests. */
   FILE *test_fp;
@@ -667,31 +668,31 @@ extern void guestfs___trace_send_line (guestfs_h *g, struct trace_buffer *tb);
 //#define match3 guestfs___match3
 //#define match4 guestfs___match4
 //#define match6 guestfs___match6
-//
-///* stringsbuf.c */
-//struct stringsbuf {
-//  char **argv;
-//  size_t size;
-//  size_t alloc;
-//};
-//#define DECLARE_STRINGSBUF(v) \
-//  struct stringsbuf (v) = { .argv = NULL, .size = 0, .alloc = 0 }
-//
-//extern void guestfs___add_string_nodup (guestfs_h *g, struct stringsbuf *sb, char *str);
-//extern void guestfs___add_string (guestfs_h *g, struct stringsbuf *sb, const char *str);
-////extern void guestfs___add_sprintf (guestfs_h *g, struct stringsbuf *sb, const char *fs, ...)
-////  __attribute__((format (printf,3,4)));
-//extern void guestfs___end_stringsbuf (guestfs_h *g, struct stringsbuf *sb);
-//
-//extern void guestfs___free_stringsbuf (struct stringsbuf *sb);
-//
-//#ifdef HAVE_ATTRIBUTE_CLEANUP
-//#define CLEANUP_FREE_STRINGSBUF __attribute__((cleanup(guestfs___cleanup_free_stringsbuf)))
-//#else
-//#define CLEANUP_FREE_STRINGSBUF
-//#endif
-//extern void guestfs___cleanup_free_stringsbuf (struct stringsbuf *sb);
-//
+
+/* stringsbuf.c */
+struct stringsbuf {
+  char **argv;
+  size_t size;
+  size_t alloc;
+};
+#define DECLARE_STRINGSBUF(v) \
+  struct stringsbuf (v) = { .argv = NULL, .size = 0, .alloc = 0 }
+
+extern void guestfs___add_string_nodup (guestfs_h *g, struct stringsbuf *sb, char *str);
+extern void guestfs___add_string (guestfs_h *g, struct stringsbuf *sb, const char *str);
+extern void guestfs___add_sprintf (guestfs_h *g, struct stringsbuf *sb, const char *fs, ...);
+//  __attribute__((format (printf,3,4)));
+extern void guestfs___end_stringsbuf (guestfs_h *g, struct stringsbuf *sb);
+
+extern void guestfs___free_stringsbuf (struct stringsbuf *sb);
+
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_FREE_STRINGSBUF __attribute__((cleanup(guestfs___cleanup_free_stringsbuf)))
+#else
+#define CLEANUP_FREE_STRINGSBUF
+#endif
+extern void guestfs___cleanup_free_stringsbuf (struct stringsbuf *sb);
+
 ///* proto.c */
 ////extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
 ////extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
@@ -706,11 +707,11 @@ extern void guestfs___trace_send_line (guestfs_h *g, struct trace_buffer *tb);
 //extern struct connection *guestfs___new_conn_socket_listening (guestfs_h *g, int daemon_accept_sock, int console_sock);
 //extern struct connection *guestfs___new_conn_socket_connected (guestfs_h *g, int daemon_sock, int console_sock);
 //
-///* events.c */
-//extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
-//extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, const char *buf, size_t buf_len);
-//extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
-//
+/* events.c */
+extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
+extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, const char *buf, size_t buf_len);
+extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const uint64_t *array, size_t array_len);
+
 ///* tmpdirs.c */
 //extern int guestfs___set_env_tmpdir (guestfs_h *g, const char *tmpdir);
 //extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
@@ -816,28 +817,28 @@ extern int guestfs___set_backend (guestfs_h *g, const char *method);
 //
 ///* command.c */
 //struct command;
-//typedef void (*cmd_stdout_callback) (guestfs_h *g, void *data, const char *line, size_t len);
-//extern struct command *guestfs___new_command (guestfs_h *g);
+typedef void (*cmd_stdout_callback) (guestfs_h *g, void *data, const char *line, size_t len);
+extern struct command *guestfs___new_command (guestfs_h *g);
 //extern void guestfs___cmd_add_arg (struct command *, const char *arg);
 ////extern void guestfs___cmd_add_arg_format (struct command *, const char *fs, ...)
 ////  __attribute__((format (printf,2,3)));
 //extern void guestfs___cmd_add_string_unquoted (struct command *, const char *str);
 //extern void guestfs___cmd_add_string_quoted (struct command *, const char *str);
-//extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_callback stdout_callback, void *data, unsigned flags);
-//#define CMD_STDOUT_FLAG_LINE_BUFFER    0
-//#define CMD_STDOUT_FLAG_UNBUFFERED      1
-//#define CMD_STDOUT_FLAG_WHOLE_BUFFER    2
+extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_callback stdout_callback, void *data, unsigned flags);
+#define CMD_STDOUT_FLAG_LINE_BUFFER    0
+#define CMD_STDOUT_FLAG_UNBUFFERED      1
+#define CMD_STDOUT_FLAG_WHOLE_BUFFER    2
 //extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
 //extern void guestfs___cmd_clear_capture_errors (struct command *);
 //extern void guestfs___cmd_clear_close_files (struct command *);
 //extern int guestfs___cmd_run (struct command *);
 //extern void guestfs___cmd_close (struct command *);
 //
-//#ifdef HAVE_ATTRIBUTE_CLEANUP
-//#define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs___cleanup_cmd_close)))
-//#else
-//#define CLEANUP_CMD_CLOSE
-//#endif
+#ifdef HAVE_ATTRIBUTE_CLEANUP
+#define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs___cleanup_cmd_close)))
+#else
+#define CLEANUP_CMD_CLOSE
+#endif
 //extern void guestfs___cleanup_cmd_close (struct command **);
 //
 ///* launch-direct.c */
