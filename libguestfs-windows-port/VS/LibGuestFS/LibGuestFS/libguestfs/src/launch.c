@@ -20,17 +20,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <stdint.h>
-//#include <stdbool.h>
-//#include <inttypes.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <inttypes.h>
 //#include <unistd.h>
-//#include <string.h>
-//#include <fcntl.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 //#include <sys/wait.h>
-//#include <errno.h>
+#include <errno.h>
 #include <assert.h>
+
+#include <extra-win.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -43,128 +45,128 @@ static struct backend {
   const struct backend_ops *ops;
 } *backends = NULL;
 
-//static mode_t get_umask (guestfs_h *g);
-//
-//int
-//guestfs__launch (guestfs_h *g)
-//{
-//  /* Configured? */
-//  if (g->state != CONFIG) {
-//    error (g, _("the libguestfs handle has already been launched"));
-//    return -1;
-//  }
-//
-//  /* Start the clock ... */
-//  gettimeofday (&g->launch_t, NULL);
-//  TRACE0 (launch_start);
-//
-//  /* Make the temporary directory. */
-//  if (guestfs___lazy_make_tmpdir (g) == -1)
-//    return -1;
-//
+static int get_umask (guestfs_h *g);
+
+int
+guestfs__launch (guestfs_h *g)
+{
+  /* Configured? */
+  if (g->state != CONFIG) {
+    error (g, _("the libguestfs handle has already been launched"));
+    return -1;
+  }
+
+  /* Start the clock ... */
+  gettimeofday (&g->launch_t, NULL);
+  TRACE0 (launch_start);
+
+  /* Make the temporary directory. */
+  if (guestfs___lazy_make_tmpdir (g) == -1)
+    return -1;
+
 //  /* Allow anyone to read the temporary directory.  The socket in this
 //   * directory won't be readable but anyone can see it exists if they
 //   * want. (RHBZ#610880).
 //   */
 //  if (chmod (g->tmpdir, 0755) == -1)
 //    warning (g, "chmod: %s: %m (ignored)", g->tmpdir);
-//
-//  /* Some common debugging information. */
-//  if (g->verbose) {
-//    CLEANUP_FREE_VERSION struct guestfs_version *v =
-//      guestfs_version (g);
-//    struct backend *b;
-//    CLEANUP_FREE char *backend = guestfs_get_backend (g);
-//
-//    debug (g, "launch: program=%s", g->program);
-//    debug (g, "launch: version=%"PRIi64".%"PRIi64".%"PRIi64"%s",
-//           v->major, v->minor, v->release, v->extra);
-//
-//    for (b = backends; b != NULL; b = b->next)
-//      debug (g, "launch: backend registered: %s", b->name);
-//    debug (g, "launch: backend=%s", backend);
-//
-//    debug (g, "launch: tmpdir=%s", g->tmpdir);
-//    debug (g, "launch: umask=0%03o", get_umask (g));
-//    debug (g, "launch: euid=%d", geteuid ());
-//  }
-//
-//  /* Launch the appliance. */
-//  if (g->backend_ops->launch (g, g->backend_data, g->backend_arg) == -1)
-//    return -1;
-//
-//  return 0;
-//}
-//
-///* launch (of the appliance) generates approximate progress
-// * messages.  Currently these are defined as follows:
-// *
-// *    0 / 12: launch clock starts
-// *    3 / 12: appliance created
-// *    6 / 12: detected that guest kernel started
-// *    9 / 12: detected that /init script is running
-// *   12 / 12: launch completed successfully
-// *
-// * Notes:
-// * (1) This is not a documented ABI and the behaviour may be changed
-// * or removed in future.
-// * (2) Messages are only sent if more than 5 seconds has elapsed
-// * since the launch clock started.
-// * (3) There is a hack in proto.c to make this work.
-// */
-//void
-//guestfs___launch_send_progress (guestfs_h *g, int perdozen)
-//{
-//  struct timeval tv;
-//
-//  gettimeofday (&tv, NULL);
-//  if (guestfs___timeval_diff (&g->launch_t, &tv) >= 5000) {
-//    guestfs_progress progress_message =
-//      { .proc = 0, .serial = 0, .position = perdozen, .total = 12 };
-//
-//    guestfs___progress_message_callback (g, &progress_message);
-//  }
-//}
-//
-///* Note that since this calls 'debug' it should only be called
-// * from the parent process.
-// */
-//void
-//guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
-//{
-//  va_list args;
-//  char *msg;
-//  int err;
-//  struct timeval tv;
-//
-//  va_start (args, fs);
-//  err = vasprintf (&msg, fs, args);
-//  va_end (args);
-//
-//  if (err < 0) return;
-//
-//  gettimeofday (&tv, NULL);
-//
-//  debug (g, "[%05" PRIi64 "ms] %s",
-//         guestfs___timeval_diff (&g->launch_t, &tv), msg);
-//
-//  free (msg);
-//}
-//
-///* Compute Y - X and return the result in milliseconds.
-// * Approximately the same as this code:
-// * http://www.mpp.mpg.de/~huber/util/timevaldiff.c
-// */
-//int64_t
-//guestfs___timeval_diff (const struct timeval *x, const struct timeval *y)
-//{
-//  int64_t msec;
-//
-//  msec = (y->tv_sec - x->tv_sec) * 1000;
-//  msec += (y->tv_usec - x->tv_usec) / 1000;
-//  return msec;
-//}
-//
+
+  /* Some common debugging information. */
+  if (g->verbose) {
+    CLEANUP_FREE_VERSION struct guestfs_version *v =
+      guestfs_version (g);
+    struct backend *b;
+    CLEANUP_FREE char *backend = guestfs_get_backend (g);
+
+    debug (g, "launch: program=%s", g->program);
+    debug (g, "launch: version=%"PRIi64".%"PRIi64".%"PRIi64"%s",
+           v->major, v->minor, v->release, v->extra);
+
+    for (b = backends; b != NULL; b = b->next)
+      debug (g, "launch: backend registered: %s", b->name);
+    debug (g, "launch: backend=%s", backend);
+
+    debug (g, "launch: tmpdir=%s", g->tmpdir);
+    debug (g, "launch: umask=0x%.4x", get_umask (g));
+    //debug (g, "launch: euid=%d", geteuid ());
+  }
+
+  /* Launch the appliance. */
+  if (g->backend_ops->launch (g, g->backend_data, g->backend_arg) == -1)
+    return -1;
+
+  return 0;
+}
+
+/* launch (of the appliance) generates approximate progress
+ * messages.  Currently these are defined as follows:
+ *
+ *    0 / 12: launch clock starts
+ *    3 / 12: appliance created
+ *    6 / 12: detected that guest kernel started
+ *    9 / 12: detected that /init script is running
+ *   12 / 12: launch completed successfully
+ *
+ * Notes:
+ * (1) This is not a documented ABI and the behaviour may be changed
+ * or removed in future.
+ * (2) Messages are only sent if more than 5 seconds has elapsed
+ * since the launch clock started.
+ * (3) There is a hack in proto.c to make this work.
+ */
+void
+guestfs___launch_send_progress (guestfs_h *g, int perdozen)
+{
+  struct timeval tv;
+
+  //gettimeofday (&tv, NULL);
+  //if (guestfs___timeval_diff (&g->launch_t, &tv) >= 5000) {
+  //  guestfs_progress progress_message =
+  //    { .proc = 0, .serial = 0, .position = perdozen, .total = 12 };
+
+  //  guestfs___progress_message_callback (g, &progress_message);
+  //}
+}
+
+/* Note that since this calls 'debug' it should only be called
+ * from the parent process.
+ */
+void
+guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...)
+{
+  va_list args;
+  char *msg;
+  int err;
+  struct timeval tv;
+
+  va_start (args, fs);
+  err = vasprintf (&msg, fs, args);
+  va_end (args);
+
+  if (err < 0) return;
+
+  gettimeofday (&tv, NULL);
+
+  debug (g, "[%05" PRIi64 "ms] %s",
+         guestfs___timeval_diff (&g->launch_t, &tv), msg);
+
+  free (msg);
+}
+
+/* Compute Y - X and return the result in milliseconds.
+ * Approximately the same as this code:
+ * http://www.mpp.mpg.de/~huber/util/timevaldiff.c
+ */
+int64_t
+guestfs___timeval_diff (const struct timeval *x, const struct timeval *y)
+{
+  int64_t msec;
+
+  msec = (y->tv_sec - x->tv_sec) * 1000;
+  msec += (y->tv_usec - x->tv_usec) / 1000;
+  return msec;
+}
+
 //int
 //guestfs__get_pid (guestfs_h *g)
 //{
@@ -283,186 +285,171 @@ static struct backend {
 //  return 0;
 //}
 //
-///* Construct the Linux command line passed to the appliance.  This is
-// * used by the 'direct' and 'libvirt' backends, and is simply
-// * located in this file because it's a convenient place for this
-// * common code.
-// *
-// * The 'appliance_dev' parameter must be the full device name of the
-// * appliance disk and must have already been adjusted to take into
-// * account virtio-blk or virtio-scsi; eg "/dev/sdb".
-// *
-// * The 'flags' parameter can contain the following flags logically
-// * or'd together (or 0):
-// *
-// * GUESTFS___APPLIANCE_COMMAND_LINE_IS_TCG: If we are launching a qemu
-// * TCG guest (ie. KVM is known to be disabled or unavailable).  If you
-// * don't know, don't pass this flag.
-// *
-// * Note that this returns a newly allocated buffer which must be freed
-// * by the caller.
-// */
-//#if defined(__powerpc64__)
-//#define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
-//#elif defined(__arm__) || defined(__aarch64__)
-//#define SERIAL_CONSOLE "console=ttyAMA0"
-//#else
-//#define SERIAL_CONSOLE "console=ttyS0"
-//#endif
-//
-//char *
-//guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
-//                                  int flags)
-//{
-//  char root[64] = "";
-//  char *term = getenv ("TERM");
-//  char *ret;
-//  bool tcg = flags & APPLIANCE_COMMAND_LINE_IS_TCG;
-//  char lpj_s[64] = "";
-//
-//  if (appliance_dev)
-//    snprintf (root, sizeof root, " root=%s", appliance_dev);
-//
-//  if (tcg) {
-//    int lpj = guestfs___get_lpj (g);
-//    if (lpj > 0)
-//      snprintf (lpj_s, sizeof lpj_s, " lpj=%d", lpj);
-//  }
-//
-//  ret = safe_asprintf
-//    (g,
-//     "panic=1"             /* force kernel to panic if daemon exits */
-//#ifdef __arm__
-//     " mem=%dM"
-//#endif
-//#ifdef VALGRIND_DAEMON
-//     " guestfs_valgrind_daemon=1"
-//#endif
-//#ifdef __i386__
-//     " noapic"                  /* workaround for RHBZ#857026 */
-//#endif
-//     " " SERIAL_CONSOLE /* serial console */
-//#ifdef __aarch64__
-//     " earlyprintk=pl011,0x9000000 ignore_loglevel"
-//     /* This option turns off the EFI RTC device.  QEMU VMs don't
-//      * currently provide EFI, and if the device is compiled in it
-//      * will try to call the EFI function GetTime unconditionally
-//      * (causing a call to NULL).  However this option requires a
-//      * non-upstream patch.
-//      */
-//     " efi-rtc=noprobe"
-//#endif
-//     " udevtimeout=6000"/* for slow systems (RHBZ#480319, RHBZ#1096579) */
-//     " udev.event-timeout=6000" /* for newer udevd */
-//     " no_timer_check"  /* fix for RHBZ#502058 */
-//     "%s"               /* lpj */
-//     " acpi=off"        /* we don't need ACPI, turn it off */
-//     " printk.time=1"   /* display timestamp before kernel messages */
-//     " cgroup_disable=memory"   /* saves us about 5 MB of RAM */
-//     "%s"                       /* root=appliance_dev */
-//     " %s"                      /* selinux */
-//     "%s"                       /* verbose */
-//     "%s"                       /* network */
-//     " TERM=%s"                 /* TERM environment variable */
-//     "%s%s",                    /* append */
-//#ifdef __arm__
-//     g->memsize,
-//#endif
-//     lpj_s,
-//     root,
-//     g->selinux ? "selinux=1 enforcing=0" : "selinux=0",
-//     g->verbose ? " guestfs_verbose=1" : "",
-//     g->enable_network ? " guestfs_network=1" : "",
-//     term ? term : "linux",
-//     g->append ? " " : "", g->append ? g->append : "");
-//
-//  return ret;
-//}
-//
-///* Return the right CPU model to use as the -cpu parameter or its
-// * equivalent in libvirt.  This returns:
-// *
-// * - "host" (means use -cpu host)
-// * - some string such as "cortex-a57" (means use -cpu string)
-// * - NULL (means no -cpu option at all)
-// *
-// * This is made unnecessarily hard and fragile because of two stupid
-// * choices in QEMU:
-// *
-// * (1) The default for qemu-system-aarch64 -M virt is to emulate a
-// * cortex-a15 (WTF?).
-// *
-// * (2) We don't know for sure if KVM will work, but -cpu host is
-// * broken with TCG, so we almost always pass a broken -cpu flag if KVM
-// * is semi-broken in any way.
-// */
-//const char *
-//guestfs___get_cpu_model (int kvm)
-//{
-//#if defined(__arm__)            /* 32 bit ARM. */
-//  if (kvm)
-//    return "host";
-//  else
-//    return NULL;
-//
-//#elif defined(__aarch64__)
-//  /* With -M virt, the default -cpu is cortex-a15.  Stupid. */
-//  if (kvm)
-//    return "host";
-//  else
-//    return "cortex-a57";
-//
-//#elif defined(__i386__) || defined(__x86_64__)
-//  /* It is faster to pass the CPU host model to the appliance,
-//   * allowing maximum speed for things like checksums, encryption.
-//   * Only do this with KVM.  It is broken in subtle ways on TCG, and
-//   * fairly pointless anyway.
-//   */
-//  if (kvm)
-//    return "host";
-//  else
-//    return NULL;
-//
-//#else
-//  /* Hope for the best ... */
-//  if (kvm)
-//    return "host";
-//  else
-//    return NULL;
-//#endif
-//}
-//
-///* glibc documents, but does not actually implement, a 'getumask(3)'
-// * call.  This implements a thread-safe way to get the umask.  Note
-// * this is only called when g->verbose is true and after g->tmpdir
-// * has been created.
-// */
-//static mode_t
-//get_umask (guestfs_h *g)
-//{
-//  mode_t ret;
-//  int fd;
-//  struct stat statbuf;
-//  CLEANUP_FREE char *filename = safe_asprintf (g, "%s/umask-check", g->tmpdir);
-//
-//  fd = open (filename, O_WRONLY|O_CREAT|O_TRUNC|O_NOCTTY|O_CLOEXEC, 0777);
-//  if (fd == -1)
-//    return -1;
-//
-//  if (fstat (fd, &statbuf) == -1) {
-//    close (fd);
-//    return -1;
-//  }
-//
-//  close (fd);
-//
-//  ret = statbuf.st_mode;
-//  ret &= 0777;
-//  ret = ret ^ 0777;
-//
-//  return ret;
-//}
-//
+/* Construct the Linux command line passed to the appliance.  This is
+ * used by the 'direct' and 'libvirt' backends, and is simply
+ * located in this file because it's a convenient place for this
+ * common code.
+ *
+ * The 'appliance_dev' parameter must be the full device name of the
+ * appliance disk and must have already been adjusted to take into
+ * account virtio-blk or virtio-scsi; eg "/dev/sdb".
+ *
+ * The 'flags' parameter can contain the following flags logically
+ * or'd together (or 0):
+ *
+ * GUESTFS___APPLIANCE_COMMAND_LINE_IS_TCG: If we are launching a qemu
+ * TCG guest (ie. KVM is known to be disabled or unavailable).  If you
+ * don't know, don't pass this flag.
+ *
+ * Note that this returns a newly allocated buffer which must be freed
+ * by the caller.
+ */
+#if defined(__powerpc64__)
+#define SERIAL_CONSOLE "console=hvc0 console=ttyS0"
+#elif defined(__arm__) || defined(__aarch64__)
+#define SERIAL_CONSOLE "console=ttyAMA0"
+#else
+#define SERIAL_CONSOLE "console=ttyS0"
+#endif
+
+char *
+guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev,
+                                  int flags)
+{
+  char root[64] = "";
+  char *term = getenv ("TERM");
+  char *ret;
+  bool tcg = flags & APPLIANCE_COMMAND_LINE_IS_TCG;
+  char lpj_s[64] = "";
+
+  if (appliance_dev)
+    _snprintf (root, sizeof root, " root=%s", appliance_dev);
+
+  if (tcg) {
+    int lpj = guestfs___get_lpj (g);
+    if (lpj > 0)
+      _snprintf (lpj_s, sizeof lpj_s, " lpj=%d", lpj);
+  }
+
+  ret = safe_asprintf
+    (g,
+     "panic=1"             /* force kernel to panic if daemon exits */
+#ifdef __arm__
+     " mem=%dM"
+#endif
+#ifdef VALGRIND_DAEMON
+     " guestfs_valgrind_daemon=1"
+#endif
+#ifdef __i386__
+     " noapic"                  /* workaround for RHBZ#857026 */
+#endif
+     " " SERIAL_CONSOLE /* serial console */
+#ifdef __aarch64__
+     " earlyprintk=pl011,0x9000000 ignore_loglevel"
+     /* This option turns off the EFI RTC device.  QEMU VMs don't
+      * currently provide EFI, and if the device is compiled in it
+      * will try to call the EFI function GetTime unconditionally
+      * (causing a call to NULL).  However this option requires a
+      * non-upstream patch.
+      */
+     " efi-rtc=noprobe"
+#endif
+     " udevtimeout=6000"/* for slow systems (RHBZ#480319, RHBZ#1096579) */
+     " udev.event-timeout=6000" /* for newer udevd */
+     " no_timer_check"  /* fix for RHBZ#502058 */
+     "%s"               /* lpj */
+     " acpi=off"        /* we don't need ACPI, turn it off */
+     " printk.time=1"   /* display timestamp before kernel messages */
+     " cgroup_disable=memory"   /* saves us about 5 MB of RAM */
+     "%s"                       /* root=appliance_dev */
+     " %s"                      /* selinux */
+     "%s"                       /* verbose */
+     "%s"                       /* network */
+     " TERM=%s"                 /* TERM environment variable */
+     "%s%s",                    /* append */
+#ifdef __arm__
+     g->memsize,
+#endif
+     lpj_s,
+     root,
+     g->selinux ? "selinux=1 enforcing=0" : "selinux=0",
+     g->verbose ? " guestfs_verbose=1" : "",
+     g->enable_network ? " guestfs_network=1" : "",
+     term ? term : "linux",
+     g->append ? " " : "", g->append ? g->append : "");
+
+  return ret;
+}
+
+/* Return the right CPU model to use as the -cpu parameter or its
+ * equivalent in libvirt.  This returns:
+ *
+ * - "host" (means use -cpu host)
+ * - some string such as "cortex-a57" (means use -cpu string)
+ * - NULL (means no -cpu option at all)
+ *
+ * This is made unnecessarily hard and fragile because of two stupid
+ * choices in QEMU:
+ *
+ * (1) The default for qemu-system-aarch64 -M virt is to emulate a
+ * cortex-a15 (WTF?).
+ *
+ * (2) We don't know for sure if KVM will work, but -cpu host is
+ * broken with TCG, so we almost always pass a broken -cpu flag if KVM
+ * is semi-broken in any way.
+ */
+const char *
+guestfs___get_cpu_model (int kvm)
+{
+#if defined(__arm__)            /* 32 bit ARM. */
+  if (kvm)
+    return "host";
+  else
+    return NULL;
+
+#elif defined(__aarch64__)
+  /* With -M virt, the default -cpu is cortex-a15.  Stupid. */
+  if (kvm)
+    return "host";
+  else
+    return "cortex-a57";
+
+#elif defined(__i386__) || defined(__x86_64__)
+  /* It is faster to pass the CPU host model to the appliance,
+   * allowing maximum speed for things like checksums, encryption.
+   * Only do this with KVM.  It is broken in subtle ways on TCG, and
+   * fairly pointless anyway.
+   */
+  if (kvm)
+    return "host";
+  else
+    return NULL;
+
+#else
+  /* Hope for the best ... */
+  if (kvm)
+    return "host";
+  else
+    return NULL;
+#endif
+}
+
+/* glibc documents, but does not actually implement, a 'getumask(3)'
+ * call.  This implements a thread-safe way to get the umask.  Note
+ * this is only called when g->verbose is true and after g->tmpdir
+ * has been created.
+ */
+static int
+get_umask (guestfs_h *g)
+{
+  int ret;
+
+  ret = _umask(0);
+  umask(ret);
+
+  return ret;
+}
+
 ///* Register backends in a global list when the library is loaded. */
 //void
 //guestfs___register_backend (const char *name, const struct backend_ops *ops)

@@ -20,14 +20,15 @@
 #define GUESTFS_INTERNAL_H_
 
 #include <stdbool.h>
-#include <WinSock2.h>
+#include <winsock2.h>
+#include <WindowsUniStd.h>
 //
 ////#include <libintl.h>
 ////
 ////#include <rpc/types.h>
 ////#include <rpc/xdr.h>
 ////
-////#include <pcre.h>
+#include <pcre.h>
 //
 #ifdef HAVE_LIBVIRT
 #include <libvirt/libvirt.h>
@@ -36,27 +37,27 @@
 ////#include "hash.h"
 //
 #include "guestfs-internal-frontend.h"
-//
-//#if ENABLE_PROBES
-//#include <sys/sdt.h>
-///* NB: The 'name' parameter is a literal identifier, NOT a string! */
-//#define TRACE0(name) DTRACE_PROBE(guestfs, name)
-//#define TRACE1(name, arg1) \
-//  DTRACE_PROBE(guestfs, name, (arg1))
-//#define TRACE2(name, arg1, arg2) \
-//  DTRACE_PROBE(guestfs, name, (arg1), (arg2))
-//#define TRACE3(name, arg1, arg2, arg3) \
-//  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3))
-//#define TRACE4(name, arg1, arg2, arg3, arg4) \
-//  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3), (arg4))
-//#else /* !ENABLE_PROBES */
-//#define TRACE0(name)
-//#define TRACE1(name, arg1)
-//#define TRACE2(name, arg1, arg2)
-//#define TRACE3(name, arg1, arg2, arg3)
-//#define TRACE4(name, arg1, arg2, arg3, arg4)
-//#endif
-//
+
+#if ENABLE_PROBES
+#include <sys/sdt.h>
+/* NB: The 'name' parameter is a literal identifier, NOT a string! */
+#define TRACE0(name) DTRACE_PROBE(guestfs, name)
+#define TRACE1(name, arg1) \
+  DTRACE_PROBE(guestfs, name, (arg1))
+#define TRACE2(name, arg1, arg2) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2))
+#define TRACE3(name, arg1, arg2, arg3) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3))
+#define TRACE4(name, arg1, arg2, arg3, arg4) \
+  DTRACE_PROBE(guestfs, name, (arg1), (arg2), (arg3), (arg4))
+#else /* !ENABLE_PROBES */
+#define TRACE0(name)
+#define TRACE1(name, arg1)
+#define TRACE2(name, arg1, arg2)
+#define TRACE3(name, arg1, arg2, arg3)
+#define TRACE4(name, arg1, arg2, arg3, arg4)
+#endif
+
 ///* Default and minimum appliance memory size. */
 //
 ///* Needs to be larger on ppc64 because of the larger page size (64K).
@@ -88,15 +89,15 @@
 #ifndef MIN_MEMSIZE
 #  define MIN_MEMSIZE 128
 #endif
-//
-///* Timeout waiting for appliance to come up (seconds).
-// *
-// * XXX This is just a large timeout for now.  Should make this
-// * configurable.  Also it interacts with libguestfs-test-tool -t
-// * option.
-// */
-//#define APPLIANCE_TIMEOUT (20*60) /* 20 mins */
-//
+
+/* Timeout waiting for appliance to come up (seconds).
+ *
+ * XXX This is just a large timeout for now.  Should make this
+ * configurable.  Also it interacts with libguestfs-test-tool -t
+ * option.
+ */
+#define APPLIANCE_TIMEOUT (20*60) /* 20 mins */
+
 ///* Some limits on what the inspection code will read, for safety. */
 //
 ///* Small text configuration files.
@@ -124,21 +125,21 @@
 ///* Maximum size of Windows explorer.exe.  2.6MB on Windows 7. */
 //#define MAX_WINDOWS_EXPLORER_SIZE (4 * 1000 * 1000)
 //
-///* Differences in device names on ARM (virtio-mmio) vs normal
-// * hardware with PCI.
-// */
-//#if !defined(__arm__) && !defined(__aarch64__)
-//#define VIRTIO_BLK "virtio-blk-pci"
-//#define VIRTIO_SCSI "virtio-scsi-pci"
-//#define VIRTIO_SERIAL "virtio-serial-pci"
-//#define VIRTIO_NET "virtio-net-pci"
-//#else /* ARM */
-//#define VIRTIO_BLK "virtio-blk-device"
-//#define VIRTIO_SCSI "virtio-scsi-device"
-//#define VIRTIO_SERIAL "virtio-serial-device"
-//#define VIRTIO_NET "virtio-net-device"
-//#endif /* ARM */
-//
+/* Differences in device names on ARM (virtio-mmio) vs normal
+ * hardware with PCI.
+ */
+#if !defined(__arm__) && !defined(__aarch64__)
+#define VIRTIO_BLK "virtio-blk-pci"
+#define VIRTIO_SCSI "virtio-scsi-pci"
+#define VIRTIO_SERIAL "virtio-serial-pci"
+#define VIRTIO_NET "virtio-net-pci"
+#else /* ARM */
+#define VIRTIO_BLK "virtio-blk-device"
+#define VIRTIO_SCSI "virtio-scsi-device"
+#define VIRTIO_SERIAL "virtio-serial-device"
+#define VIRTIO_NET "virtio-net-device"
+#endif /* ARM */
+
 ///* Machine types.  XXX Make these configurable. */
 //#ifdef __arm__
 ///* In future, we can use mach-virt and drop the device tree completely
@@ -266,14 +267,14 @@ struct drive {
   bool copyonread;
 };
 
-///* Extra hv parameters (from guestfs_config). */
-//struct hv_param {
-//  struct hv_param *next;
-//
-//  char *hv_param;
-//  char *hv_value;               /* May be NULL. */
-//};
-//
+/* Extra hv parameters (from guestfs_config). */
+struct hv_param {
+  struct hv_param *next;
+
+  char *hv_param;
+  char *hv_value;               /* May be NULL. */
+};
+
 /* Backend operations. */
 struct backend_ops {
   /* Size (in bytes) of the per-handle data structure needed by this
@@ -303,57 +304,57 @@ struct backend_ops {
   int (*hot_add_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
   int (*hot_remove_drive) (guestfs_h *g, void *data, struct drive *drv, size_t drv_index);
 };
-//
-///* Connection module.  A 'connection' represents the appliance console
-// * connection plus the daemon connection.  It hides the underlying
-// * representation (POSIX sockets, virStreamPtr).
-// */
-//struct connection {
-//  const struct connection_ops *ops;
-//
-//  /* In the real struct, private data used by each connection module
-//   * follows here.
-//   */
-//};
-//
-//struct connection_ops {
-//  /* Close everything and free the connection struct and any internal data. */
-//  void (*free_connection) (guestfs_h *g, struct connection *);
-//
-//  /* Accept the connection (back to us) from the daemon.
-//   * There is an implicit timeout (APPLIANCE_TIMEOUT defined above).
-//   *
-//   * Returns: 1 = accepted, 0 = appliance closed connection, -1 = error
-//   */
-//  int (*accept_connection) (guestfs_h *g, struct connection *);
-//
-//  /* Read/write the given buffer from/to the daemon.  The whole buffer is
-//   * read or written.  Partial reads/writes are automatically completed
-//   * if possible, and if this wasn't possible it returns an error.
-//   *
-//   * These functions also monitor the console socket and deliver log
-//   * messages up as events.  This is entirely transparent to the caller.
-//   *
-//   * Normal return is number of bytes read/written.  Both functions
-//   * return 0 to mean that the appliance closed the connection or
-//   * otherwise went away.  -1 means there's an error.
-//   */
-//  //ssize_t (*read_data) (guestfs_h *g, struct connection *, void *buf, size_t len);
-//  //ssize_t (*write_data) (guestfs_h *g, struct connection *, const void *buf, size_t len);
-//
-//  /* Test if data is available to read on the daemon socket, without blocking.
-//   * Returns: 1 = yes, 0 = no, -1 = error
-//   */
-//  int (*can_read_data) (guestfs_h *g, struct connection *);
-//};
-//
-///* Stack of old error handlers. */
-//struct error_cb_stack {
-//  struct error_cb_stack   *next;
-//  guestfs_error_handler_cb error_cb;
-//  void *                   error_cb_data;
-//};
-//
+
+/* Connection module.  A 'connection' represents the appliance console
+ * connection plus the daemon connection.  It hides the underlying
+ * representation (POSIX sockets, virStreamPtr).
+ */
+struct connection {
+  const struct connection_ops *ops;
+
+  /* In the real struct, private data used by each connection module
+   * follows here.
+   */
+};
+
+struct connection_ops {
+  /* Close everything and free the connection struct and any internal data. */
+  void (*free_connection) (guestfs_h *g, struct connection *);
+
+  /* Accept the connection (back to us) from the daemon.
+   * There is an implicit timeout (APPLIANCE_TIMEOUT defined above).
+   *
+   * Returns: 1 = accepted, 0 = appliance closed connection, -1 = error
+   */
+  int (*accept_connection) (guestfs_h *g, struct connection *);
+
+  /* Read/write the given buffer from/to the daemon.  The whole buffer is
+   * read or written.  Partial reads/writes are automatically completed
+   * if possible, and if this wasn't possible it returns an error.
+   *
+   * These functions also monitor the console socket and deliver log
+   * messages up as events.  This is entirely transparent to the caller.
+   *
+   * Normal return is number of bytes read/written.  Both functions
+   * return 0 to mean that the appliance closed the connection or
+   * otherwise went away.  -1 means there's an error.
+   */
+  ssize_t (*read_data) (guestfs_h *g, struct connection *, void *buf, size_t len);
+  ssize_t (*write_data) (guestfs_h *g, struct connection *, const void *buf, size_t len);
+
+  /* Test if data is available to read on the daemon socket, without blocking.
+   * Returns: 1 = yes, 0 = no, -1 = error
+   */
+  int (*can_read_data) (guestfs_h *g, struct connection *);
+};
+
+/* Stack of old error handlers. */
+struct error_cb_stack {
+  struct error_cb_stack   *next;
+  guestfs_error_handler_cb error_cb;
+  void *                   error_cb_data;
+};
+
 /* The libguestfs handle. */
 struct guestfs_h
 {
@@ -600,23 +601,27 @@ struct guestfs_h
 //
 //struct guestfs_message_header;
 //struct guestfs_message_error;
-//struct guestfs_progress;
+struct guestfs_progress;
 //
-///* handle.c */
-//extern int guestfs___get_backend_setting_bool (guestfs_h *g, const char *name);
-//
+/* handle.c */
+extern int guestfs___get_backend_setting_bool (guestfs_h *g, const char *name);
+
 /* errors.c */
 extern void guestfs___init_error_handler (guestfs_h *g);
 
-////extern void guestfs___error_errno (guestfs_h *g, int errnum, const char *fs, ...)
-//  //__attribute__((format (printf,3,4)));
-////extern void guestfs___perrorf (guestfs_h *g, const char *fs, ...)
-//  //__attribute__((format (printf,2,3)));
+extern void guestfs___error_errno (guestfs_h *g, int errnum, const char *fs, ...)
+  //__attribute__((format (printf,3,4)))
+;
+extern void guestfs___perrorf(guestfs_h *g, const char *fs, ...)
+//  __attribute__((format (printf,2,3)))
+;
+extern void guestfs___perrorf_wsa(guestfs_h *g, const char *fs, ...);
 //
 ////extern void guestfs___warning (guestfs_h *g, const char *fs, ...)
 ////  __attribute__((format (printf,2,3)));
-////extern void guestfs___debug (guestfs_h *g, const char *fs, ...)
-////  __attribute__((format (printf,2,3)));
+extern void guestfs___debug(guestfs_h *g, const char *fs, ...)
+//  __attribute__((format (printf,2,3)))
+;
 ////extern void guestfs___trace (guestfs_h *g, const char *fs, ...)
 ////  __attribute__((format (printf,2,3)));
 //
@@ -624,22 +629,23 @@ extern void guestfs___init_error_handler (guestfs_h *g);
 //extern void guestfs___print_BufferOut (FILE *out, const char *buf, size_t buf_size);
 //
 #define error(g,...) guestfs___error_errno((g),0,__VA_ARGS__)
-//#define perrorf guestfs___perrorf
+#define perrorf guestfs___perrorf
+#define perrorf_wsa guestfs___perrorf_wsa
 #define warning(g,...) guestfs___warning((g),__VA_ARGS__)
 #define debug(g,...) \
   do { if ((g)->verbose) guestfs___debug ((g),__VA_ARGS__); } while (0)
 
-//#define NOT_SUPPORTED(g,errcode,...)                     \
-//  do {                                                   \
-//    guestfs___error_errno ((g), ENOTSUP, __VA_ARGS__);   \
-//    return (errcode);                                    \
-//  }                                                      \
-//  while (0)
-//
-//extern void guestfs___launch_failed_error (guestfs_h *g);
-//extern void guestfs___unexpected_close_error (guestfs_h *g);
-//extern void guestfs___launch_timeout (guestfs_h *g);
-//extern void guestfs___external_command_failed (guestfs_h *g, int status, const char *cmd_name, const char *extra);
+#define NOT_SUPPORTED(g,errcode,...)                     \
+  do {                                                   \
+    guestfs___error_errno ((g), ENOTSUP, __VA_ARGS__);   \
+    return (errcode);                                    \
+  }                                                      \
+  while (0)
+
+extern void guestfs___launch_failed_error (guestfs_h *g);
+extern void guestfs___unexpected_close_error (guestfs_h *g);
+extern void guestfs___launch_timeout (guestfs_h *g);
+extern void guestfs___external_command_failed (guestfs_h *g, int status, const char *cmd_name, const char *extra);
 
 /* actions-support.c */
 struct trace_buffer {
@@ -654,20 +660,20 @@ struct trace_buffer {
 extern void guestfs___trace_open (struct trace_buffer *tb);
 extern void guestfs___trace_send_line (guestfs_h *g, struct trace_buffer *tb);
 
-///* match.c */
-////extern int guestfs___match (guestfs_h *g, const char *str, const pcre *re);
-////extern char *guestfs___match1 (guestfs_h *g, const char *str, const pcre *re);
-////extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2);
-////extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
-////extern int guestfs___match4 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3, char **ret4);
-////extern int guestfs___match6 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3, char **ret4, char **ret5, char **ret6);
-//
-//#define match guestfs___match
-//#define match1 guestfs___match1
-//#define match2 guestfs___match2
-//#define match3 guestfs___match3
-//#define match4 guestfs___match4
-//#define match6 guestfs___match6
+/* match.c */
+extern int guestfs___match (guestfs_h *g, const char *str, const pcre *re);
+extern char *guestfs___match1 (guestfs_h *g, const char *str, const pcre *re);
+extern int guestfs___match2 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2);
+extern int guestfs___match3 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3);
+extern int guestfs___match4 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3, char **ret4);
+extern int guestfs___match6 (guestfs_h *g, const char *str, const pcre *re, char **ret1, char **ret2, char **ret3, char **ret4, char **ret5, char **ret6);
+
+#define match guestfs___match
+#define match1 guestfs___match1
+#define match2 guestfs___match2
+#define match3 guestfs___match3
+#define match4 guestfs___match4
+#define match6 guestfs___match6
 
 /* stringsbuf.c */
 struct stringsbuf {
@@ -693,20 +699,20 @@ extern void guestfs___free_stringsbuf (struct stringsbuf *sb);
 #endif
 extern void guestfs___cleanup_free_stringsbuf (struct stringsbuf *sb);
 
-///* proto.c */
+/* proto.c */
 ////extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
 ////extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
 //extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
 //extern int guestfs___send_file (guestfs_h *g, const char *filename);
 //extern int guestfs___recv_file (guestfs_h *g, const char *filename);
-//extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
+extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
 //extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
-//extern void guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len);
-//
-///* conn-socket.c */
-//extern struct connection *guestfs___new_conn_socket_listening (guestfs_h *g, int daemon_accept_sock, int console_sock);
-//extern struct connection *guestfs___new_conn_socket_connected (guestfs_h *g, int daemon_sock, int console_sock);
-//
+extern void guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len);
+
+/* conn-socket.c */
+extern struct connection *guestfs___new_conn_socket_listening (guestfs_h *g, SOCKET daemon_accept_sock, SOCKET console_sock);
+extern struct connection *guestfs___new_conn_socket_connected (guestfs_h *g, SOCKET daemon_sock, SOCKET console_sock);
+
 /* events.c */
 extern void guestfs___call_callbacks_void (guestfs_h *g, uint64_t event);
 extern void guestfs___call_callbacks_message (guestfs_h *g, uint64_t event, const char *buf, size_t buf_len);
@@ -717,24 +723,26 @@ extern void guestfs___call_callbacks_array (guestfs_h *g, uint64_t event, const 
 //extern int guestfs___lazy_make_tmpdir (guestfs_h *g);
 //extern void guestfs___remove_tmpdir (guestfs_h *g);
 //extern void guestfs___recursive_remove_dir (guestfs_h *g, const char *dir);
-//
-///* drives.c */
-//extern size_t guestfs___checkpoint_drives (guestfs_h *g);
-//extern void guestfs___rollback_drives (guestfs_h *g, size_t);
-//extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
-//extern void guestfs___free_drives (guestfs_h *g);
-//extern const char *guestfs___drive_protocol_to_string (enum drive_protocol protocol);
-//
+
+/* drives.c */
+extern size_t guestfs___checkpoint_drives (guestfs_h *g);
+extern void guestfs___rollback_drives (guestfs_h *g, size_t);
+extern void guestfs___add_dummy_appliance_drive (guestfs_h *g);
+extern void guestfs___free_drives (guestfs_h *g);
+extern const char *guestfs___drive_protocol_to_string (enum drive_protocol protocol);
+
 ///* appliance.c */
 //extern int guestfs___build_appliance (guestfs_h *g, char **kernel, char **dtb, char **initrd, char **appliance);
 //
-///* launch.c */
-////extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
-////extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...) __attribute__((format (printf,2,3)));
-//extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
-//extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
-//#define APPLIANCE_COMMAND_LINE_IS_TCG 1
-//const char *guestfs___get_cpu_model (int kvm);
+/* launch.c */
+extern int64_t guestfs___timeval_diff (const struct timeval *x, const struct timeval *y);
+extern void guestfs___print_timestamped_message (guestfs_h *g, const char *fs, ...) 
+//__attribute__((format (printf,2,3)))
+;
+extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
+extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
+#define APPLIANCE_COMMAND_LINE_IS_TCG 1
+const char *guestfs___get_cpu_model (int kvm);
 //extern void guestfs___register_backend (const char *name, const struct backend_ops *);
 extern int guestfs___set_backend (guestfs_h *g, const char *method);
 //
@@ -815,25 +823,26 @@ extern int guestfs___set_backend (guestfs_h *g, const char *method);
 //};
 //extern int guestfs___osinfo_map (guestfs_h *g, const struct guestfs_isoinfo *isoinfo, const struct osinfo **osinfo_ret);
 //
-///* command.c */
-//struct command;
+/* command.c */
+struct command;
 typedef void (*cmd_stdout_callback) (guestfs_h *g, void *data, const char *line, size_t len);
 extern struct command *guestfs___new_command (guestfs_h *g);
-//extern void guestfs___cmd_add_arg (struct command *, const char *arg);
-////extern void guestfs___cmd_add_arg_format (struct command *, const char *fs, ...)
-////  __attribute__((format (printf,2,3)));
-//extern void guestfs___cmd_add_string_unquoted (struct command *, const char *str);
-//extern void guestfs___cmd_add_string_quoted (struct command *, const char *str);
+extern void guestfs___cmd_add_arg (struct command *, const char *arg);
+extern void guestfs___cmd_add_arg_format (struct command *, const char *fs, ...)
+  //__attribute__((format (printf,2,3)))
+;
+extern void guestfs___cmd_add_string_unquoted (struct command *, const char *str);
+extern void guestfs___cmd_add_string_quoted (struct command *, const char *str);
 extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_callback stdout_callback, void *data, unsigned flags);
 #define CMD_STDOUT_FLAG_LINE_BUFFER    0
 #define CMD_STDOUT_FLAG_UNBUFFERED      1
 #define CMD_STDOUT_FLAG_WHOLE_BUFFER    2
-//extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
-//extern void guestfs___cmd_clear_capture_errors (struct command *);
-//extern void guestfs___cmd_clear_close_files (struct command *);
-//extern int guestfs___cmd_run (struct command *);
-//extern void guestfs___cmd_close (struct command *);
-//
+extern void guestfs___cmd_set_stderr_to_stdout (struct command *);
+extern void guestfs___cmd_clear_capture_errors (struct command *);
+extern void guestfs___cmd_clear_close_files (struct command *);
+extern int guestfs___cmd_run (struct command *);
+extern void guestfs___cmd_close (struct command *);
+
 #ifdef HAVE_ATTRIBUTE_CLEANUP
 #define CLEANUP_CMD_CLOSE __attribute__((cleanup(guestfs___cleanup_cmd_close)))
 #else
@@ -841,9 +850,9 @@ extern void guestfs___cmd_set_stdout_callback (struct command *, cmd_stdout_call
 #endif
 //extern void guestfs___cleanup_cmd_close (struct command **);
 //
-///* launch-direct.c */
-//extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
-//extern bool guestfs___discard_possible (guestfs_h *g, struct drive *drv, unsigned long qemu_version);
+/* launch-direct.c */
+extern char *guestfs___drive_source_qemu_param (guestfs_h *g, const struct drive_source *src);
+extern bool guestfs___discard_possible (guestfs_h *g, struct drive *drv, unsigned long qemu_version);
 //
 ///* guid.c */
 //extern int guestfs___validate_guid (const char *);

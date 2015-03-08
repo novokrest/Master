@@ -591,19 +591,19 @@ guestfs__set_verbose (guestfs_h *g, int v)
 //  return g->selinux;
 //}
 //
-//struct guestfs_version *
-//guestfs__version (guestfs_h *g)
-//{
-//  struct guestfs_version *r;
-//
-//  r = safe_malloc (g, sizeof *r);
-//  r->major = PACKAGE_VERSION_MAJOR;
-//  r->minor = PACKAGE_VERSION_MINOR;
-//  r->release = PACKAGE_VERSION_RELEASE;
-//  r->extra = safe_strdup (g, PACKAGE_VERSION_EXTRA);
-//  return r;
-//}
-//
+struct guestfs_version *
+guestfs__version (guestfs_h *g)
+{
+  struct guestfs_version *r;
+
+  r = safe_malloc (g, sizeof *r);
+  r->major = PACKAGE_VERSION_MAJOR;
+  r->minor = PACKAGE_VERSION_MINOR;
+  r->release = PACKAGE_VERSION_RELEASE;
+  r->extra = safe_strdup (g, PACKAGE_VERSION_EXTRA);
+  return r;
+}
+
 //int
 //guestfs__set_trace (guestfs_h *g, int t)
 //{
@@ -720,50 +720,50 @@ guestfs__get_backend (guestfs_h *g)
 //
 //  return 0;
 //}
-//
-//char **
-//guestfs__get_backend_settings (guestfs_h *g)
-//{
-//  char *empty_list[1] = { NULL };
-//  char **ret;
-//
-//  if (g->backend_settings == NULL)
-//    ret = guestfs___copy_string_list (empty_list);
-//  else
-//    ret = guestfs___copy_string_list (g->backend_settings);
-//
-//  if (ret == NULL) {
-//    perrorf (g, "copy: malloc");
-//    return NULL;
-//  }
-//
-//  return ret;                   /* caller frees */
-//}
-//
-//char *
-//guestfs__get_backend_setting (guestfs_h *g, const char *name)
-//{
-//  char **settings = g->backend_settings;
-//  size_t namelen = strlen (name);
-//  size_t i;
-//
-//  if (settings == NULL)
-//    goto not_found;
-//
-//  for (i = 0; settings[i] != NULL; ++i) {
-//    /* "name" is the same as "name=1" */
-//    if (STREQ (settings[i], name))
-//      return safe_strdup (g, "1");
-//    /* "name=...", return value */
-//    if (STRPREFIX (settings[i], name) && settings[i][namelen] == '=')
-//      return safe_strdup (g, &settings[i][namelen+1]);
-//  }
-//
-// not_found:
-//  guestfs___error_errno (g, ESRCH, _("setting not found"));
-//  return NULL;
-//}
-//
+
+char **
+guestfs__get_backend_settings (guestfs_h *g)
+{
+  char *empty_list[1] = { NULL };
+  char **ret;
+
+  if (g->backend_settings == NULL)
+    ret = guestfs___copy_string_list (empty_list);
+  else
+    ret = guestfs___copy_string_list (g->backend_settings);
+
+  if (ret == NULL) {
+    perrorf (g, "copy: malloc");
+    return NULL;
+  }
+
+  return ret;                   /* caller frees */
+}
+
+char *
+guestfs__get_backend_setting (guestfs_h *g, const char *name)
+{
+  char **settings = g->backend_settings;
+  size_t namelen = strlen (name);
+  size_t i;
+
+  if (settings == NULL)
+    goto not_found;
+
+  for (i = 0; settings[i] != NULL; ++i) {
+    /* "name" is the same as "name=1" */
+    if (STREQ (settings[i], name))
+      return safe_strdup (g, "1");
+    /* "name=...", return value */
+    if (STRPREFIX (settings[i], name) && settings[i][namelen] == '=')
+      return safe_strdup (g, &settings[i][namelen+1]);
+  }
+
+ not_found:
+  guestfs___error_errno (g, ESRCH, _("setting not found"));
+  return NULL;
+}
+
 //int
 //guestfs__clear_backend_setting (guestfs_h *g, const char *name)
 //{
@@ -818,30 +818,30 @@ guestfs__get_backend (guestfs_h *g)
 //  return 0;
 //}
 //
-///* This is a convenience function, but we might consider exporting
-// * it as an API in future.
-// */
-//int
-//guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
-//{
-//  CLEANUP_FREE char *value = NULL;
-//
-//  guestfs_push_error_handler (g, NULL, NULL);
-//  value = guestfs_get_backend_setting (g, name);
-//  guestfs_pop_error_handler (g);
-//
-//  if (value == NULL && guestfs_last_errno (g) == ESRCH)
-//    return 0;
-//
-//  if (value == NULL)
-//    return -1;
-//
-//  if (STREQ (value, "1"))
-//    return 1;
-//
-//  return 0;
-//}
-//
+/* This is a convenience function, but we might consider exporting
+ * it as an API in future.
+ */
+int
+guestfs___get_backend_setting_bool (guestfs_h *g, const char *name)
+{
+  CLEANUP_FREE char *value = NULL;
+
+  guestfs_push_error_handler (g, NULL, NULL);
+  value = guestfs_get_backend_setting (g, name);
+  guestfs_pop_error_handler (g);
+
+  if (value == NULL && guestfs_last_errno (g) == ESRCH)
+    return 0;
+
+  if (value == NULL)
+    return -1;
+
+  if (STREQ (value, "1"))
+    return 1;
+
+  return 0;
+}
+
 //int
 //guestfs__set_pgroup (guestfs_h *g, int v)
 //{

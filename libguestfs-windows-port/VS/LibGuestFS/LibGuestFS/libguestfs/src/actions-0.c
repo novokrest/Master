@@ -6123,101 +6123,103 @@ guestfs_set_backend (guestfs_h *g,
 //  return ret_v;
 //}
 //
-//GUESTFS_DLL_PUBLIC int
-//guestfs_internal_hot_add_drive (guestfs_h *g,
-//                                const char *label)
-//{
-//  struct guestfs_internal_hot_add_drive_args args;
-//  guestfs_message_header hdr;
-//  guestfs_message_error err;
-//  int serial;
-//  int r;
-//  int trace_flag = g->trace;
-//  struct trace_buffer trace_buffer;
-//  int ret_v;
-//  const uint64_t progress_hint = 0;
-//
-//  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-//                                    "internal_hot_add_drive", 22);
-//  if (label == NULL) {
-//    error (g, "%s: %s: parameter cannot be NULL",
-//           "internal_hot_add_drive", "label");
-//    return -1;
-//  }
-//
-//  if (trace_flag) {
-//    guestfs___trace_open (&trace_buffer);
-//    fprintf (trace_buffer.fp, "%s", "internal_hot_add_drive");
-//    fprintf (trace_buffer.fp, " \"%s\"", label);
-//    guestfs___trace_send_line (g, &trace_buffer);
-//  }
-//
-//  if (guestfs___check_appliance_up (g, "internal_hot_add_drive") == -1) {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "internal_hot_add_drive", "-1");
-//    return -1;
-//  }
-//
-//  args.label = (char *) label;
-//  serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE,
-//                           progress_hint, 0,
-//                           (xdrproc_t) xdr_guestfs_internal_hot_add_drive_args, (char *) &args);
-//  if (serial == -1) {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "internal_hot_add_drive", "-1");
-//    return -1;
-//  }
-//
-//  memset (&hdr, 0, sizeof hdr);
-//  memset (&err, 0, sizeof err);
-//
-//  r = guestfs___recv (g, "internal_hot_add_drive", &hdr, &err,
-//        NULL, NULL);
-//  if (r == -1) {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "internal_hot_add_drive", "-1");
-//    return -1;
-//  }
-//
-//  if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE, serial) == -1) {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "internal_hot_add_drive", "-1");
-//    return -1;
-//  }
-//
-//  if (hdr.status == GUESTFS_STATUS_ERROR) {
-//    int errnum = 0;
-//
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "internal_hot_add_drive", "-1");
-//    if (err.errno_string[0] != '\0')
-//      errnum = guestfs___string_to_errno (err.errno_string);
-//    if (errnum <= 0)
-//      error (g, "%s: %s", "internal_hot_add_drive", err.error_message);
-//    else
-//      guestfs___error_errno (g, errnum, "%s: %s", "internal_hot_add_drive",
-//                           err.error_message);
-//    free (err.error_message);
-//    free (err.errno_string);
-//    return -1;
-//  }
-//
-//  ret_v = 0;
-//  if (trace_flag) {
-//    guestfs___trace_open (&trace_buffer);
-//    fprintf (trace_buffer.fp, "%s = ", "internal_hot_add_drive");
-//    fprintf (trace_buffer.fp, "%d", ret_v);
-//    guestfs___trace_send_line (g, &trace_buffer);
-//  }
-//
-//  return ret_v;
-//}
-//
+GUESTFS_DLL_PUBLIC int
+guestfs_internal_hot_add_drive (guestfs_h *g,
+                                const char *label)
+{
+  //struct guestfs_internal_hot_add_drive_args args;
+  //guestfs_message_header hdr;
+  //guestfs_message_error err;
+  //int serial;
+  //int r;
+  //int trace_flag = g->trace;
+  //struct trace_buffer trace_buffer;
+  //int ret_v;
+  //const uint64_t progress_hint = 0;
+
+  //guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+  //                                  "internal_hot_add_drive", 22);
+  //if (label == NULL) {
+  //  error (g, "%s: %s: parameter cannot be NULL",
+  //         "internal_hot_add_drive", "label");
+  //  return -1;
+  //}
+
+  //if (trace_flag) {
+  //  guestfs___trace_open (&trace_buffer);
+  //  fprintf (trace_buffer.fp, "%s", "internal_hot_add_drive");
+  //  fprintf (trace_buffer.fp, " \"%s\"", label);
+  //  guestfs___trace_send_line (g, &trace_buffer);
+  //}
+
+  //if (guestfs___check_appliance_up (g, "internal_hot_add_drive") == -1) {
+  //  if (trace_flag)
+  //    guestfs___trace (g, "%s = %s (error)",
+  //                     "internal_hot_add_drive", "-1");
+  //  return -1;
+  //}
+
+  //args.label = (char *) label;
+  //serial = guestfs___send (g, GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE,
+  //                         progress_hint, 0,
+  //                         (xdrproc_t) xdr_guestfs_internal_hot_add_drive_args, (char *) &args);
+  //if (serial == -1) {
+  //  if (trace_flag)
+  //    guestfs___trace (g, "%s = %s (error)",
+  //                     "internal_hot_add_drive", "-1");
+  //  return -1;
+  //}
+
+  //memset (&hdr, 0, sizeof hdr);
+  //memset (&err, 0, sizeof err);
+
+  //r = guestfs___recv (g, "internal_hot_add_drive", &hdr, &err,
+  //      NULL, NULL);
+  //if (r == -1) {
+  //  if (trace_flag)
+  //    guestfs___trace (g, "%s = %s (error)",
+  //                     "internal_hot_add_drive", "-1");
+  //  return -1;
+  //}
+
+  //if (guestfs___check_reply_header (g, &hdr, GUESTFS_PROC_INTERNAL_HOT_ADD_DRIVE, serial) == -1) {
+  //  if (trace_flag)
+  //    guestfs___trace (g, "%s = %s (error)",
+  //                     "internal_hot_add_drive", "-1");
+  //  return -1;
+  //}
+
+  //if (hdr.status == GUESTFS_STATUS_ERROR) {
+  //  int errnum = 0;
+
+  //  if (trace_flag)
+  //    guestfs___trace (g, "%s = %s (error)",
+  //                     "internal_hot_add_drive", "-1");
+  //  if (err.errno_string[0] != '\0')
+  //    errnum = guestfs___string_to_errno (err.errno_string);
+  //  if (errnum <= 0)
+  //    error (g, "%s: %s", "internal_hot_add_drive", err.error_message);
+  //  else
+  //    guestfs___error_errno (g, errnum, "%s: %s", "internal_hot_add_drive",
+  //                         err.error_message);
+  //  free (err.error_message);
+  //  free (err.errno_string);
+  //  return -1;
+  //}
+
+  //ret_v = 0;
+  //if (trace_flag) {
+  //  guestfs___trace_open (&trace_buffer);
+  //  fprintf (trace_buffer.fp, "%s = ", "internal_hot_add_drive");
+  //  fprintf (trace_buffer.fp, "%d", ret_v);
+  //  guestfs___trace_send_line (g, &trace_buffer);
+  //}
+
+  //return ret_v;
+
+    return -1;
+}
+
 //GUESTFS_DLL_PUBLIC int
 //guestfs_internal_hot_remove_drive_precheck (guestfs_h *g,
 //                                            const char *label)

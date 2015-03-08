@@ -21,7 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
 #include <unistd.h>
+#else
+#include <io.h>
+#include <WindowsUniStd.h>
+#include <extra-win.h>
+#endif
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -62,7 +68,7 @@ set_abs_path (guestfs_h *g, const char *tmpdir, char **tmpdir_ret)
     return -1;
   }
 
-  if (!S_ISDIR (statbuf.st_mode)) {
+  if (statbuf.st_mode & _S_IFCHR == 0) {
     error (g, _("temporary directory '%s' is not a directory"), tmpdir);
     return -1;
   }
@@ -94,7 +100,7 @@ guestfs__get_tmpdir (guestfs_h *g)
   else if (g->env_tmpdir)
     str = g->env_tmpdir;
   else
-    str = "/tmp";
+    str = "C:/Program Files/GuestFS/tmp";
 
   return safe_strdup (g, str);
 }
@@ -131,7 +137,7 @@ guestfs___lazy_make_tmpdir (guestfs_h *g)
   if (!g->tmpdir) {
     CLEANUP_FREE char *tmpdir = guestfs_get_tmpdir (g);
     g->tmpdir = safe_asprintf (g, "%s/libguestfsXXXXXX", tmpdir);
-    if (mkdtemp (g->tmpdir) == NULL) {
+    if (_mktemp (g->tmpdir) == NULL || !CreateDirectory(g->tmpdir, NULL)) {
       perrorf (g, _("%s: cannot create temporary directory"), g->tmpdir);
       free (g->tmpdir);
       g->tmpdir = NULL;

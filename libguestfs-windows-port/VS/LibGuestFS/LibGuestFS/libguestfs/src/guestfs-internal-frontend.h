@@ -85,8 +85,9 @@ extern void *guestfs___safe_realloc (guestfs_h *g, void *ptr, size_t nbytes);
 extern char *guestfs___safe_strdup (guestfs_h *g, const char *str);
 extern char *guestfs___safe_strndup (guestfs_h *g, const char *str, size_t n);
 extern void *guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size);
-//extern char *guestfs___safe_asprintf (guestfs_h *g, const char *fs, ...)
-//  __attribute__((format (printf,2,3)));
+extern char *guestfs___safe_asprintf(guestfs_h *g, const char *fs, ...)
+//  __attribute__((format (printf,2,3)))
+;
 
 #define safe_calloc guestfs___safe_calloc
 #define safe_malloc guestfs___safe_malloc

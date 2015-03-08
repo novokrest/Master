@@ -832,72 +832,72 @@ guestfs_add_drive_opts_va (guestfs_h *g,
 //  return guestfs_cpio_out_argv (g, directory, cpiofile, optargs);
 //}
 //
-//int
-//guestfs_disk_create (guestfs_h *g,
-//                     const char *filename,
-//                     const char *format,
-//                     int64_t size,
-//                     ...)
-//{
-//  va_list optargs;
-//
-//  int r;
-//
-//  va_start (optargs, size);
-//  r = guestfs_disk_create_va (g, filename, format, size, optargs);
-//  va_end (optargs);
-//
-//  return r;
-//}
-//
-//int
-//guestfs_disk_create_va (guestfs_h *g,
-//                        const char *filename,
-//                        const char *format,
-//                        int64_t size,
-//                        va_list args)
-//{
-//  struct guestfs_disk_create_argv optargs_s;
-//  struct guestfs_disk_create_argv *optargs = &optargs_s;
-//  int i;
-//  uint64_t i_mask;
-//
-//  optargs_s.bitmask = 0;
-//
-//  while ((i = va_arg (args, int)) >= 0) {
-//    switch (i) {
-//    case GUESTFS_DISK_CREATE_BACKINGFILE:
-//      optargs_s.backingfile = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_DISK_CREATE_BACKINGFORMAT:
-//      optargs_s.backingformat = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_DISK_CREATE_PREALLOCATION:
-//      optargs_s.preallocation = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_DISK_CREATE_COMPAT:
-//      optargs_s.compat = va_arg (args, const char *);
-//      break;
-//    case GUESTFS_DISK_CREATE_CLUSTERSIZE:
-//      optargs_s.clustersize = va_arg (args, int);
-//      break;
-//    default:
-//      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
-//             "disk_create", i);
-//      return -1;
-//    }
-//
-//    i_mask = UINT64_C(1) << i;
-//    if (optargs_s.bitmask & i_mask) {
-//      error (g, "%s: same optional argument specified more than once",
-//             "disk_create");
-//      return -1;
-//    }
-//    optargs_s.bitmask |= i_mask;
-//  }
-//
-//  return guestfs_disk_create_argv (g, filename, format, size, optargs);
-//}
+int
+guestfs_disk_create (guestfs_h *g,
+                     const char *filename,
+                     const char *format,
+                     int64_t size,
+                     ...)
+{
+  va_list optargs;
+
+  int r;
+
+  va_start (optargs, size);
+  r = guestfs_disk_create_va (g, filename, format, size, optargs);
+  va_end (optargs);
+
+  return r;
+}
+
+int
+guestfs_disk_create_va (guestfs_h *g,
+                        const char *filename,
+                        const char *format,
+                        int64_t size,
+                        va_list args)
+{
+  struct guestfs_disk_create_argv optargs_s;
+  struct guestfs_disk_create_argv *optargs = &optargs_s;
+  int i;
+  uint64_t i_mask;
+
+  optargs_s.bitmask = 0;
+
+  while ((i = va_arg (args, int)) >= 0) {
+    switch (i) {
+    case GUESTFS_DISK_CREATE_BACKINGFILE:
+      optargs_s.backingfile = va_arg (args, const char *);
+      break;
+    case GUESTFS_DISK_CREATE_BACKINGFORMAT:
+      optargs_s.backingformat = va_arg (args, const char *);
+      break;
+    case GUESTFS_DISK_CREATE_PREALLOCATION:
+      optargs_s.preallocation = va_arg (args, const char *);
+      break;
+    case GUESTFS_DISK_CREATE_COMPAT:
+      optargs_s.compat = va_arg (args, const char *);
+      break;
+    case GUESTFS_DISK_CREATE_CLUSTERSIZE:
+      optargs_s.clustersize = va_arg (args, int);
+      break;
+    default:
+      error (g, "%s: unknown option %d (this can happen if a program is compiled against a newer version of libguestfs, then dynamically linked to an older version)",
+             "disk_create", i);
+      return -1;
+    }
+
+    i_mask = UINT64_C(1) << i;
+    if (optargs_s.bitmask & i_mask) {
+      error (g, "%s: same optional argument specified more than once",
+             "disk_create");
+      return -1;
+    }
+    optargs_s.bitmask |= i_mask;
+  }
+
+  return guestfs_disk_create_argv (g, filename, format, size, optargs);
+}
 //
 //int
 //guestfs_e2fsck (guestfs_h *g,

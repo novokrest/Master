@@ -23,6 +23,8 @@
 //#include <unistd.h>
 #include <string.h>
 
+#include <extra-win.h>
+
 //#include <libxml/tree.h>
 //#include <libxml/xpath.h>
 //#include <libxml/xmlwriter.h>
@@ -94,13 +96,13 @@ guestfs___safe_strdup (guestfs_h *g, const char *str)
   return s;
 }
 
-//char *
-//guestfs___safe_strndup (guestfs_h *g, const char *str, size_t n)
-//{
-//  char *s = strndup (str, n);
-//  if (!s) g->abort_cb ();
-//  return s;
-//}
+char *
+guestfs___safe_strndup (guestfs_h *g, const char *str, size_t n)
+{
+  char *s = strndup (str, n);
+  if (!s) g->abort_cb ();
+  return s;
+}
 
 void *
 guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size)
@@ -111,19 +113,19 @@ guestfs___safe_memdup (guestfs_h *g, const void *ptr, size_t size)
   return p;
 }
 
-//char *
-//guestfs___safe_asprintf (guestfs_h *g, const char *fs, ...)
-//{
-//  va_list args;
-//  char *msg;
-//  int err;
-//
-//  va_start (args, fs);
-//  err = vasprintf (&msg, fs, args);
-//  va_end (args);
-//
-//  if (err == -1)
-//    g->abort_cb ();
-//
-//  return msg;
-//}
+char *
+guestfs___safe_asprintf (guestfs_h *g, const char *fs, ...)
+{
+  va_list args;
+  char *msg;
+  int err;
+
+  va_start (args, fs);
+  err = vasprintf (&msg, fs, args);
+  va_end (args);
+
+  if (err == -1)
+    g->abort_cb ();
+
+  return msg;
+}

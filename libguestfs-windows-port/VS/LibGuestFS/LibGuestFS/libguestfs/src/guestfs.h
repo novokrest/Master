@@ -87,9 +87,9 @@ extern GUESTFS_DLL_PUBLIC guestfs_h *guestfs_create_flags (unsigned flags, ...);
 //
 ///* Error handling. */
 //extern GUESTFS_DLL_PUBLIC const char *guestfs_last_error (guestfs_h *g);
-//#define GUESTFS_HAVE_LAST_ERRNO 1
-//extern GUESTFS_DLL_PUBLIC int guestfs_last_errno (guestfs_h *g);
-//
+#define GUESTFS_HAVE_LAST_ERRNO 1
+extern GUESTFS_DLL_PUBLIC int guestfs_last_errno (guestfs_h *g);
+
 #ifndef GUESTFS_TYPEDEF_ERROR_HANDLER_CB
 #define GUESTFS_TYPEDEF_ERROR_HANDLER_CB 1
 typedef void (*guestfs_error_handler_cb) (guestfs_h *g, void *opaque, const char *msg);
@@ -100,10 +100,10 @@ typedef void (*guestfs_error_handler_cb) (guestfs_h *g, void *opaque, const char
 typedef void (*guestfs_abort_cb) (void) GUESTFS_NORETURN;
 #endif
 
-//extern GUESTFS_DLL_PUBLIC void guestfs_set_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
+extern GUESTFS_DLL_PUBLIC void guestfs_set_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
 //extern GUESTFS_DLL_PUBLIC guestfs_error_handler_cb guestfs_get_error_handler (guestfs_h *g, void **opaque_rtn);
-//#define GUESTFS_HAVE_PUSH_ERROR_HANDLER 1
-//extern GUESTFS_DLL_PUBLIC void guestfs_push_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
+#define GUESTFS_HAVE_PUSH_ERROR_HANDLER 1
+extern GUESTFS_DLL_PUBLIC void guestfs_push_error_handler (guestfs_h *g, guestfs_error_handler_cb cb, void *opaque);
 //#define GUESTFS_HAVE_POP_ERROR_HANDLER 1
 //extern GUESTFS_DLL_PUBLIC void guestfs_pop_error_handler (guestfs_h *g);
 //
@@ -664,13 +664,13 @@ typedef void (*guestfs_event_callback) (
 //extern GUESTFS_DLL_PUBLIC void guestfs_free_utsname (struct guestfs_utsname *);
 //extern GUESTFS_DLL_PUBLIC void guestfs_free_utsname_list (struct guestfs_utsname_list *);
 //
-//struct guestfs_version {
-//  int64_t major;
-//  int64_t minor;
-//  int64_t release;
-//  char *extra;
-//};
-//
+struct guestfs_version {
+  int64_t major;
+  int64_t minor;
+  int64_t release;
+  char *extra;
+};
+
 //struct guestfs_version_list {
 //  uint32_t len;
 //  struct guestfs_version *val;
@@ -1253,14 +1253,14 @@ extern GUESTFS_DLL_PUBLIC int guestfs_add_drive_opts_argv (guestfs_h *g, const c
 //#define GUESTFS_HAVE_DF_H 1
 //extern GUESTFS_DLL_PUBLIC char *guestfs_df_h (guestfs_h *g);
 //
-//#define GUESTFS_HAVE_DISK_CREATE 1
-//#define GUESTFS_DISK_CREATE_BACKINGFILE 0
-//#define GUESTFS_DISK_CREATE_BACKINGFORMAT 1
-//#define GUESTFS_DISK_CREATE_PREALLOCATION 2
-//#define GUESTFS_DISK_CREATE_COMPAT 3
-//#define GUESTFS_DISK_CREATE_CLUSTERSIZE 4
-//extern GUESTFS_DLL_PUBLIC int guestfs_disk_create (guestfs_h *g, const char *filename, const char *format, int64_t size, ...);
-//extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_va (guestfs_h *g, const char *filename, const char *format, int64_t size, va_list args);
+#define GUESTFS_HAVE_DISK_CREATE 1
+#define GUESTFS_DISK_CREATE_BACKINGFILE 0
+#define GUESTFS_DISK_CREATE_BACKINGFORMAT 1
+#define GUESTFS_DISK_CREATE_PREALLOCATION 2
+#define GUESTFS_DISK_CREATE_COMPAT 3
+#define GUESTFS_DISK_CREATE_CLUSTERSIZE 4
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create (guestfs_h *g, const char *filename, const char *format, int64_t size, ...);
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_va (guestfs_h *g, const char *filename, const char *format, int64_t size, va_list args);
 
 struct guestfs_disk_create_argv {
   uint64_t bitmask;
@@ -1276,7 +1276,7 @@ struct guestfs_disk_create_argv {
   int clustersize;
 };
 
-//extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_argv (guestfs_h *g, const char *filename, const char *format, int64_t size, const struct guestfs_disk_create_argv *optargs);
+extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_argv (guestfs_h *g, const char *filename, const char *format, int64_t size, const struct guestfs_disk_create_argv *optargs);
 //
 //#define GUESTFS_HAVE_DISK_FORMAT 1
 //extern GUESTFS_DLL_PUBLIC char *guestfs_disk_format (guestfs_h *g, const char *filename);
@@ -1421,9 +1421,9 @@ struct guestfs_disk_create_argv {
 #define GUESTFS_HAVE_GET_BACKEND 1
 extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
 
-//#define GUESTFS_HAVE_GET_BACKEND_SETTING 1
-//extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend_setting (guestfs_h *g, const char *name);
-//
+#define GUESTFS_HAVE_GET_BACKEND_SETTING 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend_setting (guestfs_h *g, const char *name);
+
 //#define GUESTFS_HAVE_GET_BACKEND_SETTINGS 1
 //extern GUESTFS_DLL_PUBLIC char **guestfs_get_backend_settings (guestfs_h *g);
 //
@@ -1492,10 +1492,10 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_backend (guestfs_h *g);
 //
 //#define GUESTFS_HAVE_GET_STATE 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_get_state (guestfs_h *g);
-//
-//#define GUESTFS_HAVE_GET_TMPDIR 1
-//extern GUESTFS_DLL_PUBLIC char *guestfs_get_tmpdir (guestfs_h *g);
-//
+
+#define GUESTFS_HAVE_GET_TMPDIR 1
+extern GUESTFS_DLL_PUBLIC char *guestfs_get_tmpdir (guestfs_h *g);
+
 //#define GUESTFS_HAVE_GET_TRACE 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_get_trace (guestfs_h *g);
 //
@@ -3075,9 +3075,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_verbose (guestfs_h *g, int verbose);
 //#define GUESTFS_HAVE_UTSNAME 1
 //extern GUESTFS_DLL_PUBLIC struct guestfs_utsname *guestfs_utsname (guestfs_h *g);
 //
-//#define GUESTFS_HAVE_VERSION 1
-//extern GUESTFS_DLL_PUBLIC struct guestfs_version *guestfs_version (guestfs_h *g);
-//
+#define GUESTFS_HAVE_VERSION 1
+extern GUESTFS_DLL_PUBLIC struct guestfs_version *guestfs_version (guestfs_h *g);
+
 //#define GUESTFS_HAVE_VFS_LABEL 1
 //extern GUESTFS_DLL_PUBLIC char *guestfs_vfs_label (guestfs_h *g, const char *mountable);
 //
@@ -3307,10 +3307,10 @@ extern GUESTFS_DLL_PUBLIC int guestfs_set_verbose (guestfs_h *g, int verbose);
 //
 //#define GUESTFS_HAVE_INTERNAL_EXIT 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_internal_exit (guestfs_h *g);
-//
-//#define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
-//extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
-//
+
+#define GUESTFS_HAVE_INTERNAL_HOT_ADD_DRIVE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_add_drive (guestfs_h *g, const char *label);
+
 //#define GUESTFS_HAVE_INTERNAL_HOT_REMOVE_DRIVE 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_internal_hot_remove_drive (guestfs_h *g, const char *label);
 //

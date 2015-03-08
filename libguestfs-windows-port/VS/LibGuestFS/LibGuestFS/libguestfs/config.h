@@ -476,7 +476,7 @@
 #define HAVE_ARPA_INET_H 1
 
 /* Define to 1 if '__attribute__((cleanup(...)))' works with this compiler. */
-#define HAVE_ATTRIBUTE_CLEANUP 1
+//#define HAVE_ATTRIBUTE_CLEANUP 1
 
 /* Define to 1 if you have the <attr/xattr.h> header file. */
 #define HAVE_ATTR_XATTR_H 1
@@ -1042,7 +1042,7 @@
 #define HAVE_POSIX_FADVISE 1
 
 /* Define to 1 if you have the `posix_fallocate' function. */
-#define HAVE_POSIX_FALLOCATE 1
+//#define HAVE_POSIX_FALLOCATE 1
 
 /* Define to 1 if you have the 'pread' function. */
 #define HAVE_PREAD 1

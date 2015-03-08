@@ -1,6 +1,6 @@
-#include <printf-ext.h>
-
-#ifdef _WIN32
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
 int asprintf(char** __restrict ret, const char* __restrict format, ...)
 {
@@ -33,5 +33,3 @@ int vasprintf(char** __restrict ret, const char* __restrict format, va_list ap)
 
     return len;
 }
-
-#endif /* _WIN32 */

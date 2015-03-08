@@ -28,15 +28,22 @@
 #include <stdbool.h>
 #include <string.h>
 #include <inttypes.h>
-//#include <unistd.h>
+
+#ifndef _WIN32
+#include <unistd.h>
+#else
+#include <WindowsUniStd.h>
+//#include <WinSock2.h>
+#endif 
+
 #include <fcntl.h>
 //#include <netdb.h>
 //#include <arpa/inet.h>
 #include <assert.h>
 #include <sys/types.h>
-//
-//#include <pcre.h>
-//
+
+#include <pcre.h>
+
 #include "c-ctype.h"
 #include "ignore-value.h"
 //
@@ -65,531 +72,535 @@ struct drive_create_data {
   bool copyonread;
 };
 
-///* Compile all the regular expressions once when the shared library is
-// * loaded.  PCRE is thread safe so we're supposedly OK here if
-// * multiple threads call into the libguestfs API functions below
-// * simultaneously.
-// */
-//static pcre *re_hostname_port;
-//
-//static void compile_regexps (void) __attribute__((constructor));
-//static void free_regexps (void) __attribute__((destructor));
-//
-//static void
-//compile_regexps (void)
-//{
-//  const char *err;
-//  int offset;
-//
-//#define COMPILE(re,pattern,options)                                     \
-//  do {                                                                  \
-//    re = pcre_compile ((pattern), (options), &err, &offset, NULL);      \
-//    if (re == NULL) {                                                   \
-//      ignore_value (write (2, err, strlen (err)));                      \
-//      abort ();                                                         \
-//    }                                                                   \
-//  } while (0)
-//
-//  COMPILE (re_hostname_port, "(.*):(\\d+)$", 0);
-//}
-//
-//static void
-//free_regexps (void)
-//{
-//  pcre_free (re_hostname_port);
-//}
-//
-//static void free_drive_struct (struct drive *drv);
-//static void free_drive_source (struct drive_source *src);
-//
-///* For readonly drives, create an overlay to protect the original
-// * drive content.  Note we never need to clean up these overlays since
-// * they are created in the temporary directory and deleted when the
-// * handle is closed.
-// */
-//static int
-//create_overlay (guestfs_h *g, struct drive *drv)
-//{
-//  char *overlay;
-//
-//  assert (g->backend_ops != NULL);
-//
-//  if (g->backend_ops->create_cow_overlay == NULL) {
-//    error (g, _("this backend does not support adding read-only drives"));
-//    return -1;
-//  }
-//
-//  debug (g, "creating COW overlay to protect original drive content");
-//  overlay = g->backend_ops->create_cow_overlay (g, g->backend_data, drv);
-//  if (overlay == NULL)
-//    return -1;
-//
-//  free (drv->overlay);
-//  drv->overlay = overlay;
-//
-//  return 0;
-//}
-//
-///* Create and free the 'drive' struct. */
-//static struct drive *
-//create_drive_file (guestfs_h *g,
-//                   const struct drive_create_data *data)
-//{
-//  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
-//
-//  drv->src.protocol = drive_protocol_file;
-//  drv->src.u.path = safe_strdup (g, data->exportname);
-//  drv->src.format = data->format ? safe_strdup (g, data->format) : NULL;
-//
-//  drv->readonly = data->readonly;
-//  drv->iface = data->iface ? safe_strdup (g, data->iface) : NULL;
-//  drv->name = data->name ? safe_strdup (g, data->name) : NULL;
-//  drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
-//  drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
-//  drv->discard = data->discard;
-//  drv->copyonread = data->copyonread;
-//
-//  if (data->readonly) {
-//    if (create_overlay (g, drv) == -1) {
-//      /* Don't double-free the servers in free_drive_struct, since
-//       * they are owned by the caller along this error path.
-//       */
-//      drv->src.servers = NULL; drv->src.nr_servers = 0;
-//      free_drive_struct (drv);
-//      return NULL;
-//    }
-//  }
-//
-//  return drv;
-//}
-//
-//static struct drive *
-//create_drive_non_file (guestfs_h *g,
-//                       const struct drive_create_data *data)
-//{
-//  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
-//
-//  drv->src.protocol = data->protocol;
-//  drv->src.servers = data->servers;
-//  drv->src.nr_servers = data->nr_servers;
-//  drv->src.u.exportname = safe_strdup (g, data->exportname);
-//  drv->src.username = data->username ? safe_strdup (g, data->username) : NULL;
-//  drv->src.secret = data->secret ? safe_strdup (g, data->secret) : NULL;
-//  drv->src.format = data->format ? safe_strdup (g, data->format) : NULL;
-//
-//  drv->readonly = data->readonly;
-//  drv->iface = data->iface ? safe_strdup (g, data->iface) : NULL;
-//  drv->name = data->name ? safe_strdup (g, data->name) : NULL;
-//  drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
-//  drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
-//  drv->discard = data->discard;
-//  drv->copyonread = data->copyonread;
-//
-//  if (data->readonly) {
-//    if (create_overlay (g, drv) == -1) {
-//      /* Don't double-free the servers in free_drive_struct, since
-//       * they are owned by the caller along this error path.
-//       */
-//      drv->src.servers = NULL; drv->src.nr_servers = 0;
-//      free_drive_struct (drv);
-//      return NULL;
-//    }
-//  }
-//
-//  return drv;
-//}
-//
-//static struct drive *
-//create_drive_curl (guestfs_h *g,
-//                   const struct drive_create_data *data)
-//{
-//  if (data->nr_servers != 1) {
-//    error (g, _("curl: you must specify exactly one server"));
-//    return NULL;
-//  }
-//
-//  if (data->servers[0].transport != drive_transport_none &&
-//      data->servers[0].transport != drive_transport_tcp) {
-//    error (g, _("curl: only tcp transport is supported"));
-//    return NULL;
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("curl: pathname should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] != '/') {
-//    error (g, _("curl: pathname must begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_gluster (guestfs_h *g,
-//                      const struct drive_create_data *data)
-//{
-//  if (data->username != NULL) {
-//    error (g, _("gluster: you cannot specify a username with this protocol"));
-//    return NULL;
-//  }
-//  if (data->secret != NULL) {
-//    error (g, _("gluster: you cannot specify a secret with this protocol"));
-//    return NULL;
-//  }
-//
-//  if (data->nr_servers != 1) {
-//    error (g, _("gluster: you must specify exactly one server"));
-//    return NULL;
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("gluster: volume name parameter should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] == '/') {
-//    error (g, _("gluster: volume/image must not begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static int
-//nbd_port (void)
-//{
-//  struct servent *servent;
-//
-//  servent = getservbyname ("nbd", "tcp");
-//  if (servent)
-//    return ntohs (servent->s_port);
-//  else
-//    return 10809;
-//}
-//
-//static struct drive *
-//create_drive_nbd (guestfs_h *g,
-//                  const struct drive_create_data *data)
-//{
-//  if (data->username != NULL) {
-//    error (g, _("nbd: you cannot specify a username with this protocol"));
-//    return NULL;
-//  }
-//  if (data->secret != NULL) {
-//    error (g, _("nbd: you cannot specify a secret with this protocol"));
-//    return NULL;
-//  }
-//
-//  if (data->nr_servers != 1) {
-//    error (g, _("nbd: you must specify exactly one server"));
-//    return NULL;
-//  }
-//
-//  if (data->servers[0].port == 0)
-//    data->servers[0].port = nbd_port ();
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_rbd (guestfs_h *g,
-//                  const struct drive_create_data *data)
-//{
-//  size_t i;
-//
-//  for (i = 0; i < data->nr_servers; ++i) {
-//    if (data->servers[i].transport != drive_transport_none &&
-//        data->servers[i].transport != drive_transport_tcp) {
-//      error (g, _("rbd: only tcp transport is supported"));
-//      return NULL;
-//    }
-//    if (data->servers[i].port == 0) {
-//      error (g, _("rbd: port number must be specified"));
-//      return NULL;
-//    }
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("rbd: image name parameter should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] == '/') {
-//    error (g, _("rbd: image name must not begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_sheepdog (guestfs_h *g,
-//                       const struct drive_create_data *data)
-//{
-//  size_t i;
-//
-//  if (data->username != NULL) {
-//    error (g, _("sheepdog: you cannot specify a username with this protocol"));
-//    return NULL;
-//  }
-//  if (data->secret != NULL) {
-//    error (g, _("sheepdog: you cannot specify a secret with this protocol"));
-//    return NULL;
-//  }
-//
-//  for (i = 0; i < data->nr_servers; ++i) {
-//    if (data->servers[i].transport != drive_transport_none &&
-//        data->servers[i].transport != drive_transport_tcp) {
-//      error (g, _("sheepdog: only tcp transport is supported"));
-//      return NULL;
-//    }
-//    if (data->servers[i].port == 0) {
-//      error (g, _("sheepdog: port number must be specified"));
-//      return NULL;
-//    }
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("sheepdog: volume parameter should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] == '/') {
-//    error (g, _("sheepdog: volume parameter must not begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_ssh (guestfs_h *g,
-//                  const struct drive_create_data *data)
-//{
-//  if (data->nr_servers != 1) {
-//    error (g, _("ssh: you must specify exactly one server"));
-//    return NULL;
-//  }
-//
-//  if (data->servers[0].transport != drive_transport_none &&
-//      data->servers[0].transport != drive_transport_tcp) {
-//    error (g, _("ssh: only tcp transport is supported"));
-//    return NULL;
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("ssh: pathname should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] != '/') {
-//    error (g, _("ssh: pathname must begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  if (data->username && STREQ (data->username, "")) {
-//    error (g, _("ssh: username should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_iscsi (guestfs_h *g,
-//                    const struct drive_create_data *data)
-//{
-//  if (data->username != NULL) {
-//    error (g, _("iscsi: you cannot specify a username with this protocol"));
-//    return NULL;
-//  }
-//
-//  if (data->secret != NULL) {
-//    error (g, _("iscsi: you cannot specify a secret with this protocol"));
-//    return NULL;
-//  }
-//
-//  if (data->nr_servers != 1) {
-//    error (g, _("iscsi: you must specify exactly one server"));
-//    return NULL;
-//  }
-//
-//  if (data->servers[0].transport != drive_transport_none &&
-//      data->servers[0].transport != drive_transport_tcp) {
-//    error (g, _("iscsi: only tcp transport is supported"));
-//    return NULL;
-//  }
-//
-//  if (STREQ (data->exportname, "")) {
-//    error (g, _("iscsi: target name should not be an empty string"));
-//    return NULL;
-//  }
-//
-//  if (data->exportname[0] == '/') {
-//    error (g, _("iscsi: target string must not begin with a '/'"));
-//    return NULL;
-//  }
-//
-//  return create_drive_non_file (g, data);
-//}
-//
-///* Traditionally you have been able to use /dev/null as a filename, as
-// * many times as you like.  Ancient KVM (RHEL 5) cannot handle adding
-// * /dev/null readonly.  qemu 1.2 + virtio-scsi segfaults when you use
-// * any zero-sized file including /dev/null.  Therefore, we replace
-// * /dev/null with a non-zero sized temporary file.  This shouldn't
-// * make any difference since users are not supposed to try and access
-// * a null drive.
-// */
-//static struct drive *
-//create_drive_dev_null (guestfs_h *g,
-//                       struct drive_create_data *data)
-//{
-//  CLEANUP_FREE char *tmpfile = NULL;
-//
-//  if (data->format && STRNEQ (data->format, "raw")) {
-//    error (g, _("for device '/dev/null', format must be 'raw'"));
-//    return NULL;
-//  }
-//
-//  if (guestfs___lazy_make_tmpdir (g) == -1)
-//    return NULL;
-//
-//  /* Because we create a special file, there is no point forcing qemu
-//   * to create an overlay as well.  Save time by setting readonly = false.
-//   */
-//  data->readonly = false;
-//
-//  tmpfile = safe_asprintf (g, "%s/devnull%d", g->tmpdir, ++g->unique);
-//
-//  if (guestfs_disk_create (g, tmpfile, "raw", 4096, -1) == -1)
-//    return NULL;
-//
-//  data->exportname = tmpfile;
-//  data->discard = discard_disable;
-//  data->copyonread = false;
-//
-//  return create_drive_file (g, data);
-//}
-//
-//static struct drive *
-//create_drive_dummy (guestfs_h *g)
-//{
-//  /* A special drive struct that is used as a dummy slot for the appliance. */
-//  struct drive_create_data data = { 0, };
-//  data.exportname = "";
-//  return create_drive_file (g, &data);
-//}
-//
-//static void
-//free_drive_servers (struct drive_server *servers, size_t nr_servers)
-//{
-//  if (servers) {
-//    size_t i;
-//
-//    for (i = 0; i < nr_servers; ++i)
-//      free (servers[i].u.hostname);
-//    free (servers);
-//  }
-//}
-//
-//static void
-//free_drive_struct (struct drive *drv)
-//{
-//  free_drive_source (&drv->src);
-//  free (drv->overlay);
-//  free (drv->iface);
-//  free (drv->name);
-//  free (drv->disk_label);
-//  free (drv->cachemode);
-//
-//  free (drv);
-//}
-//
-//const char *
-//guestfs___drive_protocol_to_string (enum drive_protocol protocol)
-//{
-//  switch (protocol) {
-//  case drive_protocol_file: return "file";
-//  case drive_protocol_ftp: return "ftp";
-//  case drive_protocol_ftps: return "ftps";
-//  case drive_protocol_gluster: return "gluster";
-//  case drive_protocol_http: return "http";
-//  case drive_protocol_https: return "https";
-//  case drive_protocol_iscsi: return "iscsi";
-//  case drive_protocol_nbd: return "nbd";
-//  case drive_protocol_rbd: return "rbd";
-//  case drive_protocol_sheepdog: return "sheepdog";
-//  case drive_protocol_ssh: return "ssh";
-//  case drive_protocol_tftp: return "tftp";
-//  }
-//  abort ();
-//}
-//
-///* Convert a struct drive to a string for debugging.  The caller
-// * must free this string.
-// */
-//static char *
-//drive_to_string (guestfs_h *g, const struct drive *drv)
-//{
-//  return safe_asprintf
-//    (g, "%s%s%s%s protocol=%s%s%s%s%s%s%s%s%s%s%s",
-//     drv->src.u.path,
-//     drv->readonly ? " readonly" : "",
-//     drv->src.format ? " format=" : "",
-//     drv->src.format ? : "",
-//     guestfs___drive_protocol_to_string (drv->src.protocol),
-//     drv->iface ? " iface=" : "",
-//     drv->iface ? : "",
-//     drv->name ? " name=" : "",
-//     drv->name ? : "",
-//     drv->disk_label ? " label=" : "",
-//     drv->disk_label ? : "",
-//     drv->cachemode ? " cache=" : "",
-//     drv->cachemode ? : "",
-//     drv->discard == discard_disable ? "" :
-//     drv->discard == discard_enable ? " discard=enable" : " discard=besteffort",
-//     drv->copyonread ? " copyonread" : "");
-//}
-//
-///* Add struct drive to the g->drives vector at the given index. */
-//static void
-//add_drive_to_handle_at (guestfs_h *g, struct drive *d, size_t drv_index)
-//{
-//  if (drv_index >= g->nr_drives) {
-//    g->drives = safe_realloc (g, g->drives,
-//                              sizeof (struct drive *) * (drv_index + 1));
-//    while (g->nr_drives <= drv_index) {
-//      g->drives[g->nr_drives] = NULL;
-//      g->nr_drives++;
-//    }
-//  }
-//
-//  assert (g->drives[drv_index] == NULL);
-//
-//  g->drives[drv_index] = d;
-//}
-//
-///* Add struct drive to the end of the g->drives vector in the handle. */
-//static void
-//add_drive_to_handle (guestfs_h *g, struct drive *d)
-//{
-//  add_drive_to_handle_at (g, d, g->nr_drives);
-//}
-//
-///* Called during launch to add a dummy slot to g->drives. */
-//void
-//guestfs___add_dummy_appliance_drive (guestfs_h *g)
-//{
-//  struct drive *drv;
-//
-//  drv = create_drive_dummy (g);
-//  add_drive_to_handle (g, drv);
-//}
-//
+/* Compile all the regular expressions once when the shared library is
+ * loaded.  PCRE is thread safe so we're supposedly OK here if  
+ * multiple threads call into the libguestfs API functions below
+ * simultaneously.
+ */
+static pcre *re_hostname_port;
+
+static void compile_regexps (void) 
+//__attribute__((constructor))
+;
+static void free_regexps (void) 
+//__attribute__((destructor))
+;
+
+static void
+compile_regexps (void)
+{
+  const char *err;
+  int offset;
+
+#define COMPILE(re,pattern,options)                                     \
+  do {                                                                  \
+    re = pcre_compile ((pattern), (options), &err, &offset, NULL);      \
+    if (re == NULL) {                                                   \
+      ignore_value (write (2, err, strlen (err)));                      \
+      abort ();                                                         \
+    }                                                                   \
+  } while (0)
+
+  COMPILE (re_hostname_port, "(.*):(\\d+)$", 0);
+}
+
+static void
+free_regexps (void)
+{
+  pcre_free (re_hostname_port);
+}
+
+static void free_drive_struct (struct drive *drv);
+static void free_drive_source (struct drive_source *src);
+
+/* For readonly drives, create an overlay to protect the original
+ * drive content.  Note we never need to clean up these overlays since
+ * they are created in the temporary directory and deleted when the
+ * handle is closed.
+ */
+static int
+create_overlay (guestfs_h *g, struct drive *drv)
+{
+  char *overlay;
+
+  assert (g->backend_ops != NULL);
+
+  if (g->backend_ops->create_cow_overlay == NULL) {
+    error (g, _("this backend does not support adding read-only drives"));
+    return -1;
+  }
+
+  debug (g, "creating COW overlay to protect original drive content");
+  overlay = g->backend_ops->create_cow_overlay (g, g->backend_data, drv);
+  if (overlay == NULL)
+    return -1;
+
+  free (drv->overlay);
+  drv->overlay = overlay;
+
+  return 0;
+}
+
+/* Create and free the 'drive' struct. */
+static struct drive *
+create_drive_file (guestfs_h *g,
+                   const struct drive_create_data *data)
+{
+  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
+
+  drv->src.protocol = drive_protocol_file;
+  drv->src.u.path = safe_strdup (g, data->exportname);
+  drv->src.format = data->format ? safe_strdup (g, data->format) : NULL;
+
+  drv->readonly = data->readonly;
+  drv->iface = data->iface ? safe_strdup (g, data->iface) : NULL;
+  drv->name = data->name ? safe_strdup (g, data->name) : NULL;
+  drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
+  drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
+  drv->discard = data->discard;
+  drv->copyonread = data->copyonread;
+
+  if (data->readonly) {
+    if (create_overlay (g, drv) == -1) {
+      /* Don't double-free the servers in free_drive_struct, since
+       * they are owned by the caller along this error path.
+       */
+      drv->src.servers = NULL; drv->src.nr_servers = 0;
+      free_drive_struct (drv);
+      return NULL;
+    }
+  }
+
+  return drv;
+}
+
+static struct drive *
+create_drive_non_file (guestfs_h *g,
+                       const struct drive_create_data *data)
+{
+  struct drive *drv = safe_calloc (g, 1, sizeof *drv);
+
+  drv->src.protocol = data->protocol;
+  drv->src.servers = data->servers;
+  drv->src.nr_servers = data->nr_servers;
+  drv->src.u.exportname = safe_strdup (g, data->exportname);
+  drv->src.username = data->username ? safe_strdup (g, data->username) : NULL;
+  drv->src.secret = data->secret ? safe_strdup (g, data->secret) : NULL;
+  drv->src.format = data->format ? safe_strdup (g, data->format) : NULL;
+
+  drv->readonly = data->readonly;
+  drv->iface = data->iface ? safe_strdup (g, data->iface) : NULL;
+  drv->name = data->name ? safe_strdup (g, data->name) : NULL;
+  drv->disk_label = data->disk_label ? safe_strdup (g, data->disk_label) : NULL;
+  drv->cachemode = data->cachemode ? safe_strdup (g, data->cachemode) : NULL;
+  drv->discard = data->discard;
+  drv->copyonread = data->copyonread;
+
+  if (data->readonly) {
+    if (create_overlay (g, drv) == -1) {
+      /* Don't double-free the servers in free_drive_struct, since
+       * they are owned by the caller along this error path.
+       */
+      drv->src.servers = NULL; drv->src.nr_servers = 0;
+      free_drive_struct (drv);
+      return NULL;
+    }
+  }
+
+  return drv;
+}
+
+static struct drive *
+create_drive_curl (guestfs_h *g,
+                   const struct drive_create_data *data)
+{
+  if (data->nr_servers != 1) {
+    error (g, _("curl: you must specify exactly one server"));
+    return NULL;
+  }
+
+  if (data->servers[0].transport != drive_transport_none &&
+      data->servers[0].transport != drive_transport_tcp) {
+    error (g, _("curl: only tcp transport is supported"));
+    return NULL;
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("curl: pathname should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] != '/') {
+    error (g, _("curl: pathname must begin with a '/'"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+static struct drive *
+create_drive_gluster (guestfs_h *g,
+                      const struct drive_create_data *data)
+{
+  if (data->username != NULL) {
+    error (g, _("gluster: you cannot specify a username with this protocol"));
+    return NULL;
+  }
+  if (data->secret != NULL) {
+    error (g, _("gluster: you cannot specify a secret with this protocol"));
+    return NULL;
+  }
+
+  if (data->nr_servers != 1) {
+    error (g, _("gluster: you must specify exactly one server"));
+    return NULL;
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("gluster: volume name parameter should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] == '/') {
+    error (g, _("gluster: volume/image must not begin with a '/'"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+static int
+nbd_port (void)
+{
+  struct servent *servent;
+
+  servent = getservbyname ("nbd", "tcp");
+  if (servent)
+    return ntohs (servent->s_port);
+  else
+    return 10809;
+}
+
+static struct drive *
+create_drive_nbd (guestfs_h *g,
+                  const struct drive_create_data *data)
+{
+  if (data->username != NULL) {
+    error (g, _("nbd: you cannot specify a username with this protocol"));
+    return NULL;
+  }
+  if (data->secret != NULL) {
+    error (g, _("nbd: you cannot specify a secret with this protocol"));
+    return NULL;
+  }
+
+  if (data->nr_servers != 1) {
+    error (g, _("nbd: you must specify exactly one server"));
+    return NULL;
+  }
+
+  if (data->servers[0].port == 0)
+    data->servers[0].port = nbd_port ();
+
+  return create_drive_non_file (g, data);
+}
+
+static struct drive *
+create_drive_rbd (guestfs_h *g,
+                  const struct drive_create_data *data)
+{
+  size_t i;
+
+  for (i = 0; i < data->nr_servers; ++i) {
+    if (data->servers[i].transport != drive_transport_none &&
+        data->servers[i].transport != drive_transport_tcp) {
+      error (g, _("rbd: only tcp transport is supported"));
+      return NULL;
+    }
+    if (data->servers[i].port == 0) {
+      error (g, _("rbd: port number must be specified"));
+      return NULL;
+    }
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("rbd: image name parameter should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] == '/') {
+    error (g, _("rbd: image name must not begin with a '/'"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+static struct drive *
+create_drive_sheepdog (guestfs_h *g,
+                       const struct drive_create_data *data)
+{
+  size_t i;
+
+  if (data->username != NULL) {
+    error (g, _("sheepdog: you cannot specify a username with this protocol"));
+    return NULL;
+  }
+  if (data->secret != NULL) {
+    error (g, _("sheepdog: you cannot specify a secret with this protocol"));
+    return NULL;
+  }
+
+  for (i = 0; i < data->nr_servers; ++i) {
+    if (data->servers[i].transport != drive_transport_none &&
+        data->servers[i].transport != drive_transport_tcp) {
+      error (g, _("sheepdog: only tcp transport is supported"));
+      return NULL;
+    }
+    if (data->servers[i].port == 0) {
+      error (g, _("sheepdog: port number must be specified"));
+      return NULL;
+    }
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("sheepdog: volume parameter should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] == '/') {
+    error (g, _("sheepdog: volume parameter must not begin with a '/'"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+static struct drive *
+create_drive_ssh (guestfs_h *g,
+                  const struct drive_create_data *data)
+{
+  if (data->nr_servers != 1) {
+    error (g, _("ssh: you must specify exactly one server"));
+    return NULL;
+  }
+
+  if (data->servers[0].transport != drive_transport_none &&
+      data->servers[0].transport != drive_transport_tcp) {
+    error (g, _("ssh: only tcp transport is supported"));
+    return NULL;
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("ssh: pathname should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] != '/') {
+    error (g, _("ssh: pathname must begin with a '/'"));
+    return NULL;
+  }
+
+  if (data->username && STREQ (data->username, "")) {
+    error (g, _("ssh: username should not be an empty string"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+static struct drive *
+create_drive_iscsi (guestfs_h *g,
+                    const struct drive_create_data *data)
+{
+  if (data->username != NULL) {
+    error (g, _("iscsi: you cannot specify a username with this protocol"));
+    return NULL;
+  }
+
+  if (data->secret != NULL) {
+    error (g, _("iscsi: you cannot specify a secret with this protocol"));
+    return NULL;
+  }
+
+  if (data->nr_servers != 1) {
+    error (g, _("iscsi: you must specify exactly one server"));
+    return NULL;
+  }
+
+  if (data->servers[0].transport != drive_transport_none &&
+      data->servers[0].transport != drive_transport_tcp) {
+    error (g, _("iscsi: only tcp transport is supported"));
+    return NULL;
+  }
+
+  if (STREQ (data->exportname, "")) {
+    error (g, _("iscsi: target name should not be an empty string"));
+    return NULL;
+  }
+
+  if (data->exportname[0] == '/') {
+    error (g, _("iscsi: target string must not begin with a '/'"));
+    return NULL;
+  }
+
+  return create_drive_non_file (g, data);
+}
+
+/* Traditionally you have been able to use /dev/null as a filename, as
+ * many times as you like.  Ancient KVM (RHEL 5) cannot handle adding
+ * /dev/null readonly.  qemu 1.2 + virtio-scsi segfaults when you use
+ * any zero-sized file including /dev/null.  Therefore, we replace
+ * /dev/null with a non-zero sized temporary file.  This shouldn't
+ * make any difference since users are not supposed to try and access
+ * a null drive.
+ */
+static struct drive *
+create_drive_dev_null (guestfs_h *g,
+                       struct drive_create_data *data)
+{
+  CLEANUP_FREE char *tmpfile = NULL;
+
+  if (data->format && STRNEQ (data->format, "raw")) {
+    error (g, _("for device '/dev/null', format must be 'raw'"));
+    return NULL;
+  }
+
+  if (guestfs___lazy_make_tmpdir (g) == -1)
+    return NULL;
+
+  /* Because we create a special file, there is no point forcing qemu
+   * to create an overlay as well.  Save time by setting readonly = false.
+   */
+  data->readonly = false;
+
+  tmpfile = safe_asprintf (g, "%s/devnull%d", g->tmpdir, ++g->unique);
+
+  if (guestfs_disk_create (g, tmpfile, "raw", 4096, -1) == -1)
+    return NULL;
+
+  data->exportname = tmpfile;
+  data->discard = discard_disable;
+  data->copyonread = false;
+
+  return create_drive_file (g, data);
+}
+
+static struct drive *
+create_drive_dummy (guestfs_h *g)
+{
+  /* A special drive struct that is used as a dummy slot for the appliance. */
+  struct drive_create_data data = { 0, };
+  data.exportname = "";
+  return create_drive_file (g, &data);
+}
+
+static void
+free_drive_servers (struct drive_server *servers, size_t nr_servers)
+{
+  if (servers) {
+    size_t i;
+
+    for (i = 0; i < nr_servers; ++i)
+      free (servers[i].u.hostname);
+    free (servers);
+  }
+}
+
+static void
+free_drive_struct (struct drive *drv)
+{
+  free_drive_source (&drv->src);
+  free (drv->overlay);
+  free (drv->iface);
+  free (drv->name);
+  free (drv->disk_label);
+  free (drv->cachemode);
+
+  free (drv);
+}
+
+const char *
+guestfs___drive_protocol_to_string (enum drive_protocol protocol)
+{
+  switch (protocol) {
+  case drive_protocol_file: return "file";
+  case drive_protocol_ftp: return "ftp";
+  case drive_protocol_ftps: return "ftps";
+  case drive_protocol_gluster: return "gluster";
+  case drive_protocol_http: return "http";
+  case drive_protocol_https: return "https";
+  case drive_protocol_iscsi: return "iscsi";
+  case drive_protocol_nbd: return "nbd";
+  case drive_protocol_rbd: return "rbd";
+  case drive_protocol_sheepdog: return "sheepdog";
+  case drive_protocol_ssh: return "ssh";
+  case drive_protocol_tftp: return "tftp";
+  }
+  abort ();
+}
+
+/* Convert a struct drive to a string for debugging.  The caller
+ * must free this string.
+ */
+static char *
+drive_to_string (guestfs_h *g, const struct drive *drv)
+{
+  return safe_asprintf
+    (g, "%s%s%s%s protocol=%s%s%s%s%s%s%s%s%s%s%s",
+     drv->src.u.path,
+     drv->readonly ? " readonly" : "",
+     drv->src.format ? " format=" : "",
+     drv->src.format ? drv->src.format : "",
+     guestfs___drive_protocol_to_string (drv->src.protocol),
+     drv->iface ? " iface=" : "",
+     drv->iface ? drv->iface: "",
+     drv->name ? " name=" : "",
+     drv->name ? drv->name : "",
+     drv->disk_label ? " label=" : "",
+     drv->disk_label ? drv->disk_label: "",
+     drv->cachemode ? " cache=" : "",
+     drv->cachemode ? drv->cachemode : "",
+     drv->discard == discard_disable ? "" :
+     drv->discard == discard_enable ? " discard=enable" : " discard=besteffort",
+     drv->copyonread ? " copyonread" : "");
+}
+
+/* Add struct drive to the g->drives vector at the given index. */
+static void
+add_drive_to_handle_at (guestfs_h *g, struct drive *d, size_t drv_index)
+{
+  if (drv_index >= g->nr_drives) {
+    g->drives = safe_realloc (g, g->drives,
+                              sizeof (struct drive *) * (drv_index + 1));
+    while (g->nr_drives <= drv_index) {
+      g->drives[g->nr_drives] = NULL;
+      g->nr_drives++;
+    }
+  }
+
+  assert (g->drives[drv_index] == NULL);
+
+  g->drives[drv_index] = d;
+}
+
+/* Add struct drive to the end of the g->drives vector in the handle. */
+static void
+add_drive_to_handle (guestfs_h *g, struct drive *d)
+{
+  add_drive_to_handle_at (g, d, g->nr_drives);
+}
+
+/* Called during launch to add a dummy slot to g->drives. */
+void
+guestfs___add_dummy_appliance_drive (guestfs_h *g)
+{
+  struct drive *drv;
+
+  drv = create_drive_dummy (g);
+  add_drive_to_handle (g, drv);
+}
+
 ///* Free up all the drives in the handle. */
 //void
 //guestfs___free_drives (guestfs_h *g)
@@ -607,164 +618,164 @@ struct drive_create_data {
 //  g->nr_drives = 0;
 //}
 //
-///* Check string parameter matches ^[-_[:alnum:]]+$ (in C locale). */
-//static int
-//valid_format_iface (const char *str)
-//{
-//  size_t len = strlen (str);
-//
-//  if (len == 0)
-//    return 0;
-//
-//  while (len > 0) {
-//    char c = *str++;
-//    len--;
-//    if (c != '-' && c != '_' && !c_isalnum (c))
-//      return 0;
-//  }
-//  return 1;
-//}
-//
-///* Check the disk label is reasonable.  It can't contain certain
-// * characters, eg. '/', ','.  However be stricter here and ensure it's
-// * just alphabetic and <= 20 characters in length.
-// */
-//static int
-//valid_disk_label (const char *str)
-//{
-//  size_t len = strlen (str);
-//
-//  if (len == 0 || len > 20)
-//    return 0;
-//
-//  while (len > 0) {
-//    char c = *str++;
-//    len--;
-//    if (!c_isalpha (c))
-//      return 0;
-//  }
-//  return 1;
-//}
-//
-///* Check the server hostname is reasonable. */
-//static int
-//valid_hostname (const char *str)
-//{
-//  size_t len = strlen (str);
-//
-//  if (len == 0 || len > 255)
-//    return 0;
-//
-//  while (len > 0) {
-//    char c = *str++;
-//    len--;
-//    if (!c_isalnum (c) &&
-//        c != '-' && c != '.' && c != ':' && c != '[' && c != ']')
-//      return 0;
-//  }
-//  return 1;
-//}
-//
-///* Check the port number is reasonable. */
-//static int
-//valid_port (int port)
-//{
-//  if (port <= 0 || port > 65535)
-//    return 0;
-//  return 1;
-//}
-//
-//static int
-//parse_one_server (guestfs_h *g, const char *server, struct drive_server *ret)
-//{
-//  char *hostname;
-//  char *port_str;
-//  int port;
-//
-//  /* Note! Do not set any string field in *ret until you know the
-//   * function will return successfully.  Otherwise there can be a
-//   * double-free in parse_servers -> free_drive_servers below.
-//   */
-//
-//  ret->transport = drive_transport_none;
-//
-//  if (STRPREFIX (server, "tcp:")) {
-//    /* Explicit tcp: prefix means to skip the unix test. */
-//    server += 4;
-//    ret->transport = drive_transport_tcp;
-//    goto skip_unix;
-//  }
-//
-//  if (STRPREFIX (server, "unix:")) {
-//    if (strlen (server) == 5) {
-//      error (g, _("missing Unix domain socket path"));
-//      return -1;
-//    }
-//    ret->transport = drive_transport_unix;
-//    ret->u.socket = safe_strdup (g, server+5);
-//    ret->port = 0;
-//    return 0;
-//  }
-// skip_unix:
-//
-//  if (match2 (g, server, re_hostname_port, &hostname, &port_str)) {
-//    if (sscanf (port_str, "%d", &port) != 1 || !valid_port (port)) {
-//      error (g, _("invalid port number '%s'"), port_str);
-//      free (hostname);
-//      free (port_str);
-//      return -1;
-//    }
-//    free (port_str);
-//    if (!valid_hostname (hostname)) {
-//      error (g, _("invalid hostname '%s'"), hostname);
-//      free (hostname);
-//      return -1;
-//    }
-//    ret->u.hostname = hostname;
-//    ret->port = port;
-//    return 0;
-//  }
-//
-//  /* Doesn't match anything above, so assume it's a bare hostname. */
-//  if (!valid_hostname (server)) {
-//    error (g, _("invalid hostname or server string '%s'"), server);
-//    return -1;
-//  }
-//
-//  ret->u.hostname = safe_strdup (g, server);
-//  ret->port = 0;
-//  return 0;
-//}
-//
-//static ssize_t
-//parse_servers (guestfs_h *g, char *const *strs,
-//               struct drive_server **servers_rtn)
-//{
-//  size_t i;
-//  size_t n = guestfs___count_strings (strs);
-//  struct drive_server *servers;
-//
-//  if (n == 0) {
-//    *servers_rtn = NULL;
-//    return 0;
-//  }
-//
-//  /* Must use calloc here to avoid freeing garbage along the error
-//   * path below.
-//   */
-//  servers = safe_calloc (g, n, sizeof (struct drive_server));
-//
-//  for (i = 0; i < n; ++i) {
-//    if (parse_one_server (g, strs[i], &servers[i]) == -1) {
-//      free_drive_servers (servers, i);
-//      return -1;
-//    }
-//  }
-//
-//  *servers_rtn = servers;
-//  return n;
-//}
-//
+/* Check string parameter matches ^[-_[:alnum:]]+$ (in C locale). */
+static int
+valid_format_iface (const char *str)
+{
+  size_t len = strlen (str);
+
+  if (len == 0)
+    return 0;
+
+  while (len > 0) {
+    char c = *str++;
+    len--;
+    if (c != '-' && c != '_' && !c_isalnum (c))
+      return 0;
+  }
+  return 1;
+}
+
+/* Check the disk label is reasonable.  It can't contain certain
+ * characters, eg. '/', ','.  However be stricter here and ensure it's
+ * just alphabetic and <= 20 characters in length.
+ */
+static int
+valid_disk_label (const char *str)
+{
+  size_t len = strlen (str);
+
+  if (len == 0 || len > 20)
+    return 0;
+
+  while (len > 0) {
+    char c = *str++;
+    len--;
+    if (!c_isalpha (c))
+      return 0;
+  }
+  return 1;
+}
+
+/* Check the server hostname is reasonable. */
+static int
+valid_hostname (const char *str)
+{
+  size_t len = strlen (str);
+
+  if (len == 0 || len > 255)
+    return 0;
+
+  while (len > 0) {
+    char c = *str++;
+    len--;
+    if (!c_isalnum (c) &&
+        c != '-' && c != '.' && c != ':' && c != '[' && c != ']')
+      return 0;
+  }
+  return 1;
+}
+
+/* Check the port number is reasonable. */
+static int
+valid_port (int port)
+{
+  if (port <= 0 || port > 65535)
+    return 0;
+  return 1;
+}
+
+static int
+parse_one_server (guestfs_h *g, const char *server, struct drive_server *ret)
+{
+  char *hostname;
+  char *port_str;
+  int port;
+
+  /* Note! Do not set any string field in *ret until you know the
+   * function will return successfully.  Otherwise there can be a
+   * double-free in parse_servers -> free_drive_servers below.
+   */
+
+  ret->transport = drive_transport_none;
+
+  if (STRPREFIX (server, "tcp:")) {
+    /* Explicit tcp: prefix means to skip the unix test. */
+    server += 4;
+    ret->transport = drive_transport_tcp;
+    goto skip_unix;
+  }
+
+  if (STRPREFIX (server, "unix:")) {
+    if (strlen (server) == 5) {
+      error (g, _("missing Unix domain socket path"));
+      return -1;
+    }
+    ret->transport = drive_transport_unix;
+    ret->u.socket = safe_strdup (g, server+5);
+    ret->port = 0;
+    return 0;
+  }
+ skip_unix:
+
+  if (match2 (g, server, re_hostname_port, &hostname, &port_str)) {
+    if (sscanf (port_str, "%d", &port) != 1 || !valid_port (port)) {
+      error (g, _("invalid port number '%s'"), port_str);
+      free (hostname);
+      free (port_str);
+      return -1;
+    }
+    free (port_str);
+    if (!valid_hostname (hostname)) {
+      error (g, _("invalid hostname '%s'"), hostname);
+      free (hostname);
+      return -1;
+    }
+    ret->u.hostname = hostname;
+    ret->port = port;
+    return 0;
+  }
+
+  /* Doesn't match anything above, so assume it's a bare hostname. */
+  if (!valid_hostname (server)) {
+    error (g, _("invalid hostname or server string '%s'"), server);
+    return -1;
+  }
+
+  ret->u.hostname = safe_strdup (g, server);
+  ret->port = 0;
+  return 0;
+}
+
+static ssize_t
+parse_servers (guestfs_h *g, char *const *strs,
+               struct drive_server **servers_rtn)
+{
+  size_t i;
+  size_t n = guestfs___count_strings (strs);
+  struct drive_server *servers;
+
+  if (n == 0) {
+    *servers_rtn = NULL;
+    return 0;
+  }
+
+  /* Must use calloc here to avoid freeing garbage along the error
+   * path below.
+   */
+  servers = safe_calloc (g, n, sizeof (struct drive_server));
+
+  for (i = 0; i < n; ++i) {
+    if (parse_one_server (g, strs[i], &servers[i]) == -1) {
+      free_drive_servers (servers, i);
+      return -1;
+    }
+  }
+
+  *servers_rtn = servers;
+  return n;
+}
+
 int
 guestfs__add_drive_opts (guestfs_h *g, const char *filename,
                          const struct guestfs_add_drive_opts_argv *optargs)
@@ -1153,14 +1164,14 @@ guestfs__add_drive_opts (guestfs_h *g, const char *filename,
 //  return ret.argv;              /* caller frees */
 //}
 //
-//static void
-//free_drive_source (struct drive_source *src)
-//{
-//  if (src) {
-//    free (src->format);
-//    free (src->u.path);
-//    free (src->username);
-//    free (src->secret);
-//    free_drive_servers (src->servers, src->nr_servers);
-//  }
-//}
+static void
+free_drive_source (struct drive_source *src)
+{
+  if (src) {
+    free (src->format);
+    free (src->u.path);
+    free (src->username);
+    free (src->secret);
+    free_drive_servers (src->servers, src->nr_servers);
+  }
+}
