@@ -274,12 +274,13 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 {
   struct backend_direct_data *data = datav;
   CLEANUP_FREE_STRINGSBUF DECLARE_STRINGSBUF (cmdline);
-  int daemon_accept_sock = -1, console_sock = -1;
+  SOCKET daemon_accept_sock = INVALID_SOCKET, console_sock = INVALID_SOCKET;
   int r;
   int flags;
   int sv[2];
   char guestfsd_sock[256];
-  struct sockaddr_in addr;
+  struct addrinfo *result = NULL, hints;
+  char* port = "7777";
   CLEANUP_FREE char *kernel = NULL, *dtb = NULL,
     *initrd = NULL, *appliance = NULL;
   int has_appliance_drive;
@@ -308,8 +309,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
    * which case the user would not get hardware virtualization,
    * although at least shouldn't fail.
    */
-  //has_kvm = is_openable (g, "/dev/kvm", O_RDWR);
-  has_kvm = false;
+  has_kvm = is_openable (g, "/dev/kvm", O_RDWR);
 
   force_tcg = guestfs___get_backend_setting_bool (g, "force_tcg");
   if (force_tcg == -1)
@@ -320,7 +320,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
 
   //guestfs___launch_send_progress (g, 0);
 
-  //TRACE0 (launch_build_appliance_start);
+  TRACE0 (launch_build_appliance_start);
 
   ///* Locate and/or build the appliance. */
   //if (guestfs___build_appliance (g, &kernel, &dtb, &initrd, &appliance) == -1)
@@ -330,11 +330,11 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   appliance = "C:/cygwin64/var/tmp/.guestfs-1000/appliance.d/root";
   has_appliance_drive = appliance != NULL;
 
-  //TRACE0 (launch_build_appliance_end);
+  TRACE0 (launch_build_appliance_end);
 
   //guestfs___launch_send_progress (g, 3);
 
-  if (g->verbose)
+  if (g->verbose)   
     guestfs___print_timestamped_message (g, "begin testing qemu features");
 
   /* Get qemu help text and version. */
@@ -347,37 +347,47 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   _snprintf (guestfsd_sock, sizeof guestfsd_sock, "%s/guestfsd.sock", g->tmpdir);
   unlink (guestfsd_sock);
 
-#ifdef _WIN32
-  printf("_WIN32: daemon_accept_sock\n");
-  daemon_accept_sock = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
-#else
-  daemon_accept_sock = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
-#endif
-  if (daemon_accept_sock == -1) {
-    perrorf (g, "socket");
-    goto cleanup0;
+  WSADATA wsData;
+  if (WSAStartup(MAKEWORD(2, 2), &wsData) != 0) {
+      perrorf_wsa(g, "WSAStartup");
+      goto cleanup0;
   }
 
-#ifdef _WIN32
-  printf("_WIN32: init addr\n");
-  memset((char*)&addr, 0, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  addr.sin_port = htons(7777);
-#else
-  addr.sun_family = AF_UNIX;
-  strncpy (addr.sun_path, guestfsd_sock, UNIX_PATH_MAX);
-  addr.sun_path[UNIX_PATH_MAX-1] = '\0';
-#endif
-  if (bind (daemon_accept_sock, (struct sockaddr *) &addr,
-            sizeof addr) == -1) {
-    perrorf (g, "bind");
-    goto cleanup0;
+  ZeroMemory(&hints, sizeof(hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_protocol = IPPROTO_TCP;
+  hints.ai_flags = AI_PASSIVE;
+
+  if (getaddrinfo(NULL, port, &hints, &result) != 0) {
+      perrorf_wsa(g, "getaddrinfo");
+      WSACleanup();
+      goto cleanup0;
   }
 
-  if (listen (daemon_accept_sock, 1) == -1) {
-    perrorf (g, "listen");
-    goto cleanup0;
+  daemon_accept_sock = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+  if (daemon_accept_sock == INVALID_SOCKET) {
+      perrorf_wsa(g, "socket");
+      freeaddrinfo(result);
+      WSACleanup();
+      goto cleanup0;
+  }
+
+  if (bind(daemon_accept_sock, result->ai_addr, result->ai_addrlen) == SOCKET_ERROR) {
+      perrorf_wsa(g, "bind");
+      closesocket(daemon_accept_sock);
+      freeaddrinfo(result);
+      WSACleanup();
+      goto cleanup0;
+  }
+
+  freeaddrinfo(result);
+
+  if (listen(daemon_accept_sock, 1) == SOCKET_ERROR) {
+      perrorf_wsa(g, "listen");
+      closesocket(daemon_accept_sock);
+      WSACleanup();
+      goto cleanup0;
   }
 
   //if (!g->direct_mode) {
@@ -559,7 +569,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
        * the if=... at the end.
        */
       param = safe_asprintf
-        (g, "file=%s%s,cache=%s%s%s%s%s%s%s,id=hd%zu",
+        (g, "file=%s%s,cache=%s%s%s%s%s%s%s,id=hd%u",
          escaped_file,
          drv->readonly ? ",snapshot=on" : "",
          drv->cachemode ? drv->cachemode : "writeback",
@@ -575,7 +585,7 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       /* Writable qcow2 overlay on top of read-only drive. */
       escaped_file = qemu_escape_param (g, drv->overlay);
       param = safe_asprintf
-        (g, "file=%s,cache=unsafe,format=qcow2%s%s,id=hd%zu",
+        (g, "file=%s,cache=unsafe,format=qcow2%s%s,id=hd%u",
          escaped_file,
          drv->disk_label ? ",serial=" : "",
          drv->disk_label ? drv->disk_label : "",
@@ -601,14 +611,14 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
       ADD_CMDLINE ("-drive");
       ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
       ADD_CMDLINE ("-device");
-      ADD_CMDLINE_PRINTF ("scsi-hd,drive=hd%zu", i);
+      ADD_CMDLINE_PRINTF ("scsi-hd,drive=hd%u", i);
     }
     else {
     virtio_blk:
       ADD_CMDLINE ("-drive");
       ADD_CMDLINE_PRINTF ("%s,if=none" /* sic */, param);
       ADD_CMDLINE ("-device");
-      ADD_CMDLINE_PRINTF (VIRTIO_BLK ",drive=hd%zu", i);
+      ADD_CMDLINE_PRINTF (VIRTIO_BLK ",drive=hd%u", i);
     }
   }
 
@@ -715,15 +725,33 @@ launch_direct (guestfs_h *g, void *datav, const char *arg)
   ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
 
   siStartInfo.cb = sizeof(STARTUPINFO);
-  siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+  //siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
   char* hv_quoted = safe_malloc(g, strlen(g->hv) + 3);
   hv_quoted[0] = '\"';
   strcpy(hv_quoted + 1, g->hv);
   hv_quoted[strlen(hv_quoted)] = '\"';
+
   char* cmd = guestfs___join_strings(" ", cmdline.argv);
 
-  CreateProcess(g->hv,
+  cmd = "C:/cygwin64/usr/qemu/qemu-system-x86_64.exe" \
+      " -m 500" \
+      " -no-reboot" \
+      " -rtc driftfix=slew" \
+      " -no-kvm-pit-reinjection" \
+      " -kernel C:/cygwin64/var/tmp/.guestfs-1000/appliance.d/kernel" \
+      " -initrd C:/cygwin64/var/tmp/.guestfs-1000/appliance.d/initrd" \
+      " -drive file=C:/cygwin64/home/novokrestWin/Master/guest_fs/test_data/appliance.d/disk.img,cache=writeback,format=raw,id=hd0,if=none" \
+      " -device virtio-blk-pci,drive=hd0" \
+      " -drive file=C:/cygwin64/var/tmp/.guestfs-1000/appliance.d/root,snapshot=on,id=appliance,cache=unsafe,if=none" \
+      " -device virtio-blk-pci,drive=appliance" \
+      " -device virtio-serial-pci" \
+      " -serial stdio" \
+      " -chardev socket,host=localhost,port=7777,id=channel0" \
+      " -device virtserialport,chardev=channel0,name=org.libguestfs.channel.0" \
+      " -append \"panic=1 console=ttyS0 udevtimeout=6000 udev.event-timeout=6000 no_timer_check acpi=off printk.time=1 cgroup_disable=memory root=/dev/vdb selinux=0 guestfs_verbose=1 TERM=xterm\"";
+
+  CreateProcess(NULL,
       cmd,
       NULL,
       NULL,
@@ -1060,7 +1088,7 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs___cmd_set_stdout_callback (cmd1, read_all, &data->qemu_help,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs___cmd_run (cmd1);
-  //if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
+  if (r == -1)// || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
   guestfs___cmd_add_arg (cmd2, g->hv);
@@ -1070,7 +1098,7 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs___cmd_set_stdout_callback (cmd2, read_all, &data->qemu_version,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs___cmd_run (cmd2);
-  //if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
+  if (r == -1)// || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
   parse_qemu_version (g, data);
@@ -1091,7 +1119,7 @@ test_qemu (guestfs_h *g, struct backend_direct_data *data)
   guestfs___cmd_set_stdout_callback (cmd3, read_all, &data->qemu_devices,
                                      CMD_STDOUT_FLAG_WHOLE_BUFFER);
   r = guestfs___cmd_run (cmd3);
-  //if (r == -1 || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
+  if (r == -1)// || !WIFEXITED (r) || WEXITSTATUS (r) != 0)
     goto error;
 
   return 0;
@@ -1162,6 +1190,7 @@ static int
 qemu_supports (guestfs_h *g, struct backend_direct_data *data,
                const char *option)
 {
+  return 0;
   if (!data->qemu_help) {
     if (test_qemu (g, data) == -1)
       return -1;
@@ -1180,6 +1209,7 @@ static int
 qemu_supports_device (guestfs_h *g, struct backend_direct_data *data,
                       const char *device_name)
 {
+  return 0;
   if (!data->qemu_devices) {
     if (test_qemu (g, data) == -1)
       return -1;
@@ -1192,12 +1222,12 @@ qemu_supports_device (guestfs_h *g, struct backend_direct_data *data,
 static int
 is_openable (guestfs_h *g, const char *path, int flags)
 {
-  int fd = open (path, flags);
+  int fd = _open (path, flags);
   if (fd == -1) {
-    debug (g, "is_openable: %s: %m", path);
+    debug (g, "is_openable: %s: %s", path, strerror(errno));
     return 0;
   }
-  close (fd);
+  _close (fd);
   return 1;
 }
 
@@ -1634,4 +1664,10 @@ static void
 init_backend (void)
 {
   guestfs___register_backend ("direct", &backend_direct_ops);
+}
+
+void
+guestfs___init_backend_direct(void)
+{
+  guestfs___register_backend("direct", &backend_direct_ops);
 }

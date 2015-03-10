@@ -601,23 +601,23 @@ guestfs___add_dummy_appliance_drive (guestfs_h *g)
   add_drive_to_handle (g, drv);
 }
 
-///* Free up all the drives in the handle. */
-//void
-//guestfs___free_drives (guestfs_h *g)
-//{
-//  struct drive *drv;
-//  size_t i;
-//
-//  ITER_DRIVES (g, i, drv) {
-//    free_drive_struct (drv);
-//  }
-//
-//  free (g->drives);
-//
-//  g->drives = NULL;
-//  g->nr_drives = 0;
-//}
-//
+/* Free up all the drives in the handle. */
+void
+guestfs___free_drives (guestfs_h *g)
+{
+  struct drive *drv;
+  size_t i;
+
+  ITER_DRIVES (g, i, drv) {
+    free_drive_struct (drv);
+  }
+
+  free (g->drives);
+
+  g->drives = NULL;
+  g->nr_drives = 0;
+}
+
 /* Check string parameter matches ^[-_[:alnum:]]+$ (in C locale). */
 static int
 valid_format_iface (const char *str)

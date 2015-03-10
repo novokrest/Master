@@ -482,49 +482,49 @@
 //  return r;
 //}
 //
-//GUESTFS_DLL_PUBLIC char **
-//guestfs_inspect_os (guestfs_h *g)
-//{
-//  int trace_flag = g->trace;
-//  struct trace_buffer trace_buffer;
-//  char **r;
-//
-//  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
-//                                    "inspect_os", 10);
-//  if (trace_flag) {
-//    guestfs___trace_open (&trace_buffer);
-//    fprintf (trace_buffer.fp, "%s", "inspect_os");
-//    guestfs___trace_send_line (g, &trace_buffer);
-//  }
-//
-//  r = guestfs__inspect_os (g);
-//
-//  if (r != NULL) {
-//    if (trace_flag) {
-//      size_t i;
-//
-//      guestfs___trace_open (&trace_buffer);
-//      fprintf (trace_buffer.fp, "%s = ", "inspect_os");
-//      fputs ("[", trace_buffer.fp);
-//      for (i = 0; r[i]; ++i) {
-//        if (i > 0) fputs (", ", trace_buffer.fp);
-//        fputs ("\"", trace_buffer.fp);
-//        fputs (r[i], trace_buffer.fp);
-//        fputs ("\"", trace_buffer.fp);
-//      }
-//      fputs ("]", trace_buffer.fp);
-//      guestfs___trace_send_line (g, &trace_buffer);
-//    }
-//
-//  } else {
-//    if (trace_flag)
-//      guestfs___trace (g, "%s = %s (error)",
-//                       "inspect_os", "NULL");
-//  }
-//
-//  return r;
-//}
-//
+GUESTFS_DLL_PUBLIC char **
+guestfs_inspect_os (guestfs_h *g)
+{
+  int trace_flag = g->trace;
+  struct trace_buffer trace_buffer;
+  char **r;
+
+  guestfs___call_callbacks_message (g, GUESTFS_EVENT_ENTER,
+                                    "inspect_os", 10);
+  if (trace_flag) {
+    guestfs___trace_open (&trace_buffer);
+    fprintf (trace_buffer.fp, "%s", "inspect_os");
+    guestfs___trace_send_line (g, &trace_buffer);
+  }
+
+  r = guestfs__inspect_os (g);
+
+  if (r != NULL) {
+    if (trace_flag) {
+      size_t i;
+
+      guestfs___trace_open (&trace_buffer);
+      fprintf (trace_buffer.fp, "%s = ", "inspect_os");
+      fputs ("[", trace_buffer.fp);
+      for (i = 0; r[i]; ++i) {
+        if (i > 0) fputs (", ", trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+        fputs (r[i], trace_buffer.fp);
+        fputs ("\"", trace_buffer.fp);
+      }
+      fputs ("]", trace_buffer.fp);
+      guestfs___trace_send_line (g, &trace_buffer);
+    }
+
+  } else {
+    if (trace_flag)
+      guestfs___trace (g, "%s = %s (error)",
+                       "inspect_os", "NULL");
+  }
+
+  return r;
+}
+
 //GUESTFS_DLL_PUBLIC char *
 //guestfs_inspect_get_distro (guestfs_h *g,
 //                            const char *root)

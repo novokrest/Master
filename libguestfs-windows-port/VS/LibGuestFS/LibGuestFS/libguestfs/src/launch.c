@@ -450,24 +450,24 @@ get_umask (guestfs_h *g)
   return ret;
 }
 
-///* Register backends in a global list when the library is loaded. */
-//void
-//guestfs___register_backend (const char *name, const struct backend_ops *ops)
-//{
-//  struct backend *b;
-//
-//  b = malloc (sizeof *b);
-//  if (!b) abort ();
-//
-//  b->name = name;
-//  b->ops = ops;
-//
-//  b->next = backends;
-//  backends = b;
-//
-//  fprintf(stdout, "guestfs___register_backend: %s\n", name);
-//}
-//
+/* Register backends in a global list when the library is loaded. */
+void
+guestfs___register_backend (const char *name, const struct backend_ops *ops)
+{
+  struct backend *b;
+
+  b = malloc (sizeof *b);
+  if (!b) abort ();
+
+  b->name = name;
+  b->ops = ops;
+
+  b->next = backends;
+  backends = b;
+
+  fprintf(stdout, "guestfs___register_backend: %s\n", name);
+}
+
 /* Set the current backend.  Notes:
  * (1) Callers must ensure this is only called in the config state.
  * (2) This shouldn't call 'error' since it may be called early in

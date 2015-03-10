@@ -67,15 +67,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-//#include <unistd.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <sys/wait.h>
-//#include <sys/select.h>
+#include <sys/wait.h>
+#include <sys/select.h>
 
 #include "guestfs.h"
 #include "guestfs-internal.h"
@@ -101,7 +101,6 @@ struct buffering {
   void (*close_data) (struct command *cmd);
 };
 
-typedef int pid_t;
 struct command
 {
   guestfs_h *g;

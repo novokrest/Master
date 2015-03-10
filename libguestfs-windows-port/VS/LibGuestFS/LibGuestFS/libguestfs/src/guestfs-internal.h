@@ -21,12 +21,13 @@
 
 #include <stdbool.h>
 #include <winsock2.h>
+#include <WS2tcpip.h>
 #include <WindowsUniStd.h>
 //
 ////#include <libintl.h>
 ////
-////#include <rpc/types.h>
-////#include <rpc/xdr.h>
+#include <rpc/types.h>
+#include <rpc/xdr.h>
 ////
 #include <pcre.h>
 //
@@ -615,6 +616,7 @@ extern void guestfs___error_errno (guestfs_h *g, int errnum, const char *fs, ...
 extern void guestfs___perrorf(guestfs_h *g, const char *fs, ...)
 //  __attribute__((format (printf,2,3)))
 ;
+extern void guestfs___perrorf_win(guestfs_h *g, const char *fs, ...);
 extern void guestfs___perrorf_wsa(guestfs_h *g, const char *fs, ...);
 //
 ////extern void guestfs___warning (guestfs_h *g, const char *fs, ...)
@@ -630,6 +632,7 @@ extern void guestfs___debug(guestfs_h *g, const char *fs, ...)
 //
 #define error(g,...) guestfs___error_errno((g),0,__VA_ARGS__)
 #define perrorf guestfs___perrorf
+#define perrorf_win guestfs___perrorf_win
 #define perrorf_wsa guestfs___perrorf_wsa
 #define warning(g,...) guestfs___warning((g),__VA_ARGS__)
 #define debug(g,...) \
@@ -700,13 +703,13 @@ extern void guestfs___free_stringsbuf (struct stringsbuf *sb);
 extern void guestfs___cleanup_free_stringsbuf (struct stringsbuf *sb);
 
 /* proto.c */
-////extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
-////extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
+extern int guestfs___send (guestfs_h *g, int proc_nr, uint64_t progress_hint, uint64_t optargs_bitmask, xdrproc_t xdrp, char *args);
+extern int guestfs___recv (guestfs_h *g, const char *fn, struct guestfs_message_header *hdr, struct guestfs_message_error *err, xdrproc_t xdrp, char *ret);
 //extern int guestfs___recv_discard (guestfs_h *g, const char *fn);
 //extern int guestfs___send_file (guestfs_h *g, const char *filename);
 //extern int guestfs___recv_file (guestfs_h *g, const char *filename);
 extern int guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn);
-//extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
+extern void guestfs___progress_message_callback (guestfs_h *g, const struct guestfs_progress *message);
 extern void guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len);
 
 /* conn-socket.c */
@@ -743,7 +746,7 @@ extern void guestfs___launch_send_progress (guestfs_h *g, int perdozen);
 extern char *guestfs___appliance_command_line (guestfs_h *g, const char *appliance_dev, int flags);
 #define APPLIANCE_COMMAND_LINE_IS_TCG 1
 const char *guestfs___get_cpu_model (int kvm);
-//extern void guestfs___register_backend (const char *name, const struct backend_ops *);
+extern void guestfs___register_backend (const char *name, const struct backend_ops *);
 extern int guestfs___set_backend (guestfs_h *g, const char *method);
 //
 ///* inspect.c */
@@ -856,5 +859,8 @@ extern bool guestfs___discard_possible (guestfs_h *g, struct drive *drv, unsigne
 //
 ///* guid.c */
 //extern int guestfs___validate_guid (const char *);
+
+
+extern void guestfs___init_backend_direct(void);
 
 #endif /* GUESTFS_INTERNAL_H_ */

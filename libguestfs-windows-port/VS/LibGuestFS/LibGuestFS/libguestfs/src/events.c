@@ -91,22 +91,22 @@
 //    g->nr_events--;
 //}
 //
-///* Functions to generate an event with various payloads. */
-//
-//void
-//guestfs___call_callbacks_void (guestfs_h *g, uint64_t event)
-//{
-//  size_t i;
-//
-//  for (i = 0; i < g->nr_events; ++i)
-//    if ((g->events[i].event_bitmask & event) != 0)
-//      g->events[i].cb (g, g->events[i].opaque, event, i, 0, NULL, 0, NULL, 0);
-//
-//  /* All events with payload type void are discarded if no callback
-//   * was registered.
-//   */
-//}
-//
+/* Functions to generate an event with various payloads. */
+
+void
+guestfs___call_callbacks_void (guestfs_h *g, uint64_t event)
+{
+  size_t i;
+
+  for (i = 0; i < g->nr_events; ++i)
+    if ((g->events[i].event_bitmask & event) != 0)
+      g->events[i].cb (g, g->events[i].opaque, event, i, 0, NULL, 0, NULL, 0);
+
+  /* All events with payload type void are discarded if no callback
+   * was registered.
+   */
+}
+
 void
 guestfs___call_callbacks_message (guestfs_h *g, uint64_t event,
                                   const char *buf, size_t buf_len)
@@ -207,22 +207,22 @@ guestfs___call_callbacks_message (guestfs_h *g, uint64_t event,
   }
 }
 
-//void
-//guestfs___call_callbacks_array (guestfs_h *g, uint64_t event,
-//                                const uint64_t *array, size_t array_len)
-//{
-//  size_t i;
-//
-//  for (i = 0; i < g->nr_events; ++i)
-//    if ((g->events[i].event_bitmask & event) != 0)
-//      g->events[i].cb (g, g->events[i].opaque, event, i, 0,
-//                       NULL, 0, array, array_len);
-//
-//  /* All events with payload type array are discarded if no callback
-//   * was registered.
-//   */
-//}
-//
+void
+guestfs___call_callbacks_array (guestfs_h *g, uint64_t event,
+                                const uint64_t *array, size_t array_len)
+{
+  size_t i;
+
+  for (i = 0; i < g->nr_events; ++i)
+    if ((g->events[i].event_bitmask & event) != 0)
+      g->events[i].cb (g, g->events[i].opaque, event, i, 0,
+                       NULL, 0, array, array_len);
+
+  /* All events with payload type array are discarded if no callback
+   * was registered.
+   */
+}
+
 ///* Emulate old-style callback API.
 // *
 // * There were no event handles, so multiple callbacks per event were

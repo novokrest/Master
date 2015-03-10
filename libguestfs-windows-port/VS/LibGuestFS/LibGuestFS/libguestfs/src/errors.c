@@ -164,6 +164,53 @@ guestfs___perrorf (guestfs_h *g, const char *fs, ...)
   if (g->error_cb) g->error_cb (g, g->error_cb_data, msg);
 }
 
+static char*
+GetLastErrorStr()
+{
+    char* buf = NULL;
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+        NULL,
+        GetLastError(),
+        MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT),
+        (LPTSTR)&buf,
+        0,
+        NULL);
+
+    return buf;
+}
+
+void
+guestfs___perrorf_win(guestfs_h *g, const char *fs, ...)
+{
+    va_list args;
+    CLEANUP_FREE char *msg = NULL;
+    int errnum = errno;
+    int err;
+    char *buf;
+
+    va_start(args, fs);
+    err = vasprintf(&msg, fs, args);
+    va_end(args);
+
+    if (err < 0) return;
+
+    buf = GetLastErrorStr();
+
+    msg = safe_realloc(g, msg, strlen(msg) + 2 + strlen(buf) + 1);
+    strcat(msg, ": ");
+    strcat(msg, buf);
+
+    LocalFree(buf);
+
+    /* set_last_error first so that the callback can access the error
+    * message and errno through the handle if it wishes.
+    */
+    set_last_error(g, errnum, msg);
+    if (g->error_cb) g->error_cb(g, g->error_cb_data, msg);
+}
+
+
 void
 guestfs___perrorf_wsa(guestfs_h *g, const char *fs, ...)
 {
@@ -187,7 +234,7 @@ guestfs___perrorf_wsa(guestfs_h *g, const char *fs, ...)
         FORMAT_MESSAGE_FROM_SYSTEM,
         0,
         errnum,
-        0,
+        MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT),
         (LPTSTR)&buf,
         0,
         0);
@@ -196,7 +243,7 @@ guestfs___perrorf_wsa(guestfs_h *g, const char *fs, ...)
     strcat(msg, ": ");
     strcat(msg, buf);
 
-    free(buf);
+    LocalFree(buf);
 
     /* set_last_error first so that the callback can access the error
     * message and errno through the handle if it wishes.

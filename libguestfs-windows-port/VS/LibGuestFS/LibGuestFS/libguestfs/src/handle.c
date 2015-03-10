@@ -74,6 +74,7 @@ static int atexit_handler_set = 0;
 guestfs_h *
 guestfs_create (void)
 {
+  guestfs___init_backend_direct();
   return guestfs_create_flags (0);
 }
 

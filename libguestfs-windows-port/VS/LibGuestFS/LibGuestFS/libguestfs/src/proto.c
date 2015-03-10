@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 //#include <unistd.h>
+#include <WindowsUniStd.h>
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
@@ -34,8 +35,8 @@
 //#include <sys/wait.h>
 #include <assert.h>
 
-//#include <rpc/types.h>
-//#include <rpc/xdr.h>
+#include <rpc/types.h>
+#include <rpc/xdr.h>
 
 #include "c-ctype.h"
 //#include "glthread/lock.h"
@@ -44,7 +45,7 @@
 #include "guestfs.h"
 #include "guestfs-internal.h"
 #include "guestfs-internal-actions.h"
-//#include "guestfs_protocol.h"
+#include "guestfs_protocol.h"
 
 /* Size of guestfs_progress message on the wire. */
 #define PROGRESS_MESSAGE_SIZE 24
@@ -90,38 +91,38 @@
  */
 
 /* This is called if we detect EOF, ie. qemu died. */
-//static void
-//child_cleanup (guestfs_h *g)
-//{
-//  debug (g, "child_cleanup: %p: child process died", g);
-//
-//  g->backend_ops->shutdown (g, g->backend_data, 0);
-//  if (g->conn) {
-//    g->conn->ops->free_connection (g, g->conn);
-//    g->conn = NULL;
-//  }
-//  memset (&g->launch_t, 0, sizeof g->launch_t);
-//  guestfs___free_drives (g);
-//  g->state = CONFIG;
-//  guestfs___call_callbacks_void (g, GUESTFS_EVENT_SUBPROCESS_QUIT);
-//}
-//
-///* Convenient wrapper to generate a progress message callback. */
-//void
-//guestfs___progress_message_callback (guestfs_h *g,
-//                                     const guestfs_progress *message)
-//{
-//  uint64_t array[4];
-//
-//  array[0] = message->proc;
-//  array[1] = message->serial;
-//  array[2] = message->position;
-//  array[3] = message->total;
-//
-//  guestfs___call_callbacks_array (g, GUESTFS_EVENT_PROGRESS,
-//                                  array, sizeof array / sizeof array[0]);
-//}
-//
+static void
+child_cleanup (guestfs_h *g)
+{
+  debug (g, "child_cleanup: %p: child process died", g);
+
+  g->backend_ops->shutdown (g, g->backend_data, 0);
+  if (g->conn) {
+    g->conn->ops->free_connection (g, g->conn);
+    g->conn = NULL;
+  }
+  memset (&g->launch_t, 0, sizeof g->launch_t);
+  guestfs___free_drives (g);
+  g->state = CONFIG;
+  guestfs___call_callbacks_void (g, GUESTFS_EVENT_SUBPROCESS_QUIT);
+}
+
+/* Convenient wrapper to generate a progress message callback. */
+void
+guestfs___progress_message_callback (guestfs_h *g,
+                                     const guestfs_progress *message)
+{
+  uint64_t array[4];
+
+  array[0] = message->proc;
+  array[1] = message->serial;
+  array[2] = message->position;
+  array[3] = message->total;
+
+  guestfs___call_callbacks_array (g, GUESTFS_EVENT_PROGRESS,
+                                  array, sizeof array / sizeof array[0]);
+}
+
 /* Connection modules call us back here when they get a log message. */
 void
 guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len)
@@ -156,154 +157,154 @@ guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len)
   }
 }
 
-///* Before writing to the daemon socket, check the read side of the
-// * daemon socket for any of these conditions:
-// *
-// *   - error:                       return -1
-// *   - daemon cancellation message: return -2
-// *   - progress message:            handle it here
-// *   - end of input / appliance exited unexpectedly: return 0
-// *   - anything else:               return 1
-// */
-//static ssize_t
-//check_daemon_socket (guestfs_h *g)
-//{
-//  char buf[4];
-//  ssize_t n;
-//  uint32_t flag;
-//  XDR xdr;
-//
-//  assert (g->conn); /* callers must check this */
-//
-// again:
-//  if (! g->conn->ops->can_read_data (g, g->conn))
-//    return 1;
-//
-//  n = g->conn->ops->read_data (g, g->conn, buf, 4);
-//  if (n <= 0) /* 0 or -1 */
-//    return n;
-//
-//  xdrmem_create (&xdr, buf, 4, XDR_DECODE);
-//  xdr_uint32_t (&xdr, &flag);
-//  xdr_destroy (&xdr);
-//
-//  /* Read and process progress messages that happen during FileIn. */
-//  if (flag == GUESTFS_PROGRESS_FLAG) {
-//    char buf[PROGRESS_MESSAGE_SIZE];
-//    guestfs_progress message;
-//
-//    n = g->conn->ops->read_data (g, g->conn, buf, PROGRESS_MESSAGE_SIZE);
-//    if (n <= 0) /* 0 or -1 */
-//      return n;
-//
-//    xdrmem_create (&xdr, buf, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
-//    xdr_guestfs_progress (&xdr, &message);
-//    xdr_destroy (&xdr);
-//
-//    guestfs___progress_message_callback (g, &message);
-//
-//    goto again;
-//  }
-//
-//  if (flag != GUESTFS_CANCEL_FLAG) {
-//    error (g, _("check_daemon_socket: read 0x%x from daemon, expected 0x%x.  Lost protocol synchronization (bad!)\n"),
-//           flag, GUESTFS_CANCEL_FLAG);
-//    return -1;
-//  }
-//
-//  return -2;
-//}
-//
-//int
-//guestfs___send (guestfs_h *g, int proc_nr,
-//                uint64_t progress_hint, uint64_t optargs_bitmask,
-//                xdrproc_t xdrp, char *args)
-//{
-//  struct guestfs_message_header hdr;
-//  XDR xdr;
-//  uint32_t len;
-//  int serial = g->msg_next_serial++;
-//  ssize_t r;
-//  CLEANUP_FREE char *msg_out = NULL;
-//  size_t msg_out_size;
-//
-//  if (!g->conn) {
-//    guestfs___unexpected_close_error (g);
-//    return -1;
-//  }
-//
-//  /* We have to allocate this message buffer on the heap because
-//   * it is quite large (although will be mostly unused).  We
-//   * can't allocate it on the stack because in some environments
-//   * we have quite limited stack space available, notably when
-//   * running in the JVM.
-//   */
-//  msg_out = safe_malloc (g, GUESTFS_MESSAGE_MAX + 4);
-//  xdrmem_create (&xdr, msg_out + 4, GUESTFS_MESSAGE_MAX, XDR_ENCODE);
-//
-//  /* Serialize the header. */
-//  hdr.prog = GUESTFS_PROGRAM;
-//  hdr.vers = GUESTFS_PROTOCOL_VERSION;
-//  hdr.proc = proc_nr;
-//  hdr.direction = GUESTFS_DIRECTION_CALL;
-//  hdr.serial = serial;
-//  hdr.status = GUESTFS_STATUS_OK;
-//  hdr.progress_hint = progress_hint;
-//  hdr.optargs_bitmask = optargs_bitmask;
-//
-//  if (!xdr_guestfs_message_header (&xdr, &hdr)) {
-//    error (g, _("xdr_guestfs_message_header failed"));
-//    return -1;
-//  }
-//
-//  /* Serialize the args.  If any, because some message types
-//   * have no parameters.
-//   */
-//  if (xdrp) {
-//    if (!(*xdrp) (&xdr, args)) {
-//      error (g, _("dispatch failed to marshal args"));
-//      return -1;
-//    }
-//  }
-//
-//  /* Get the actual length of the message, resize the buffer to match
-//   * the actual length, and write the length word at the beginning.
-//   */
-//  len = xdr_getpos (&xdr);
-//  xdr_destroy (&xdr);
-//
-//  msg_out = safe_realloc (g, msg_out, len + 4);
-//  msg_out_size = len + 4;
-//
-//  xdrmem_create (&xdr, msg_out, 4, XDR_ENCODE);
-//  xdr_uint32_t (&xdr, &len);
-//
-//  /* Look for stray daemon cancellation messages from earlier calls
-//   * and ignore them.
-//   */
-//  r = check_daemon_socket (g);
-//  /* r == -2 (cancellation) is ignored */
-//  if (r == -1)
-//    return -1;
-//  if (r == 0) {
-//    guestfs___unexpected_close_error (g);
-//    child_cleanup (g);
-//    return -1;
-//  }
-//
-//  /* Send the message. */
-//  r = g->conn->ops->write_data (g, g->conn, msg_out, msg_out_size);
-//  if (r == -1)
-//    return -1;
-//  if (r == 0) {
-//    guestfs___unexpected_close_error (g);
-//    child_cleanup (g);
-//    return -1;
-//  }
-//
-//  return serial;
-//}
-//
+/* Before writing to the daemon socket, check the read side of the
+ * daemon socket for any of these conditions:
+ *
+ *   - error:                       return -1
+ *   - daemon cancellation message: return -2
+ *   - progress message:            handle it here
+ *   - end of input / appliance exited unexpectedly: return 0
+ *   - anything else:               return 1
+ */
+static ssize_t
+check_daemon_socket (guestfs_h *g)
+{
+  char buf[4];
+  ssize_t n;
+  uint32_t flag;
+  XDR xdr;
+
+  assert (g->conn); /* callers must check this */
+
+ again:
+  if (! g->conn->ops->can_read_data (g, g->conn))
+    return 1;
+
+  n = g->conn->ops->read_data (g, g->conn, buf, 4);
+  if (n <= 0) /* 0 or -1 */
+    return n;
+
+  xdrmem_create (&xdr, buf, 4, XDR_DECODE);
+  xdr_uint32_t (&xdr, &flag);
+  xdr_destroy (&xdr);
+
+  /* Read and process progress messages that happen during FileIn. */
+  if (flag == GUESTFS_PROGRESS_FLAG) {
+    char buf[PROGRESS_MESSAGE_SIZE];
+    guestfs_progress message;
+
+    n = g->conn->ops->read_data (g, g->conn, buf, PROGRESS_MESSAGE_SIZE);
+    if (n <= 0) /* 0 or -1 */
+      return n;
+
+    xdrmem_create (&xdr, buf, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
+    xdr_guestfs_progress (&xdr, &message);
+    xdr_destroy (&xdr);
+
+    guestfs___progress_message_callback (g, &message);
+
+    goto again;
+  }
+
+  if (flag != GUESTFS_CANCEL_FLAG) {
+    error (g, _("check_daemon_socket: read 0x%x from daemon, expected 0x%x.  Lost protocol synchronization (bad!)\n"),
+           flag, GUESTFS_CANCEL_FLAG);
+    return -1;
+  }
+
+  return -2;
+}
+
+int
+guestfs___send (guestfs_h *g, int proc_nr,
+                uint64_t progress_hint, uint64_t optargs_bitmask,
+                xdrproc_t xdrp, char *args)
+{
+  struct guestfs_message_header hdr;
+  XDR xdr;
+  uint32_t len;
+  int serial = g->msg_next_serial++;
+  ssize_t r;
+  CLEANUP_FREE char *msg_out = NULL;
+  size_t msg_out_size;
+
+  if (!g->conn) {
+    guestfs___unexpected_close_error (g);
+    return -1;
+  }
+
+  /* We have to allocate this message buffer on the heap because
+   * it is quite large (although will be mostly unused).  We
+   * can't allocate it on the stack because in some environments
+   * we have quite limited stack space available, notably when
+   * running in the JVM.
+   */
+  msg_out = safe_malloc (g, GUESTFS_MESSAGE_MAX + 4);
+  xdrmem_create (&xdr, msg_out + 4, GUESTFS_MESSAGE_MAX, XDR_ENCODE);
+
+  /* Serialize the header. */
+  hdr.prog = GUESTFS_PROGRAM;
+  hdr.vers = GUESTFS_PROTOCOL_VERSION;
+  hdr.proc = proc_nr;
+  hdr.direction = GUESTFS_DIRECTION_CALL;
+  hdr.serial = serial;
+  hdr.status = GUESTFS_STATUS_OK;
+  hdr.progress_hint = progress_hint;
+  hdr.optargs_bitmask = optargs_bitmask;
+
+  if (!xdr_guestfs_message_header (&xdr, &hdr)) {
+    error (g, _("xdr_guestfs_message_header failed"));
+    return -1;
+  }
+
+  /* Serialize the args.  If any, because some message types
+   * have no parameters.
+   */
+  if (xdrp) {
+    if (!(*xdrp) (&xdr, args)) {
+      error (g, _("dispatch failed to marshal args"));
+      return -1;
+    }
+  }
+
+  /* Get the actual length of the message, resize the buffer to match
+   * the actual length, and write the length word at the beginning.
+   */
+  len = xdr_getpos (&xdr);
+  xdr_destroy (&xdr);
+
+  msg_out = safe_realloc (g, msg_out, len + 4);
+  msg_out_size = len + 4;
+
+  xdrmem_create (&xdr, msg_out, 4, XDR_ENCODE);
+  xdr_uint32_t (&xdr, &len);
+
+  /* Look for stray daemon cancellation messages from earlier calls
+   * and ignore them.
+   */
+  r = check_daemon_socket (g);
+  /* r == -2 (cancellation) is ignored */
+  if (r == -1)
+    return -1;
+  if (r == 0) {
+    guestfs___unexpected_close_error (g);
+    child_cleanup (g);
+    return -1;
+  }
+
+  /* Send the message. */
+  r = g->conn->ops->write_data (g, g->conn, msg_out, msg_out_size);
+  if (r == -1)
+    return -1;
+  if (r == 0) {
+    guestfs___unexpected_close_error (g);
+    child_cleanup (g);
+    return -1;
+  }
+
+  return serial;
+}
+
 //static void
 //fadvise_sequential (int fd)
 //{
@@ -499,209 +500,207 @@ guestfs___log_message_callback (guestfs_h *g, const char *buf, size_t len)
 // * Log message, progress messages are handled transparently here.
 // */
 //
-//static int
-//recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
-//{
-//  char lenbuf[4];
-//  ssize_t n;
-//  XDR xdr;
-//  size_t message_size;
-//
-//  *size_rtn = 0;
-//  *buf_rtn = NULL;
-//
-//  /* RHBZ#914931: Along some (rare) paths, we might have closed the
-//   * socket connection just before this function is called, so just
-//   * return an error if this happens.
-//   */
-//  if (!g->conn) {
-//    guestfs___unexpected_close_error (g);
-//    return -1;
-//  }
-//
-//  /* Read the 4 byte size / flag. */
-//  n = g->conn->ops->read_data (g, g->conn, lenbuf, 4);
-//  if (n == -1)
-//    return -1;
-//  if (n == 0) {
-//    guestfs___unexpected_close_error (g);
-//    child_cleanup (g);
-//    return -1;
-//  }
-//
-//  xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
-//  xdr_uint32_t (&xdr, size_rtn);
-//  xdr_destroy (&xdr);
-//
-//  if (*size_rtn == GUESTFS_LAUNCH_FLAG) {
-//    if (g->state != LAUNCHING)
-//      error (g, _("received magic signature from guestfsd, but in state %d"),
-//             g->state);
-//    else {
-//      g->state = READY;
-//      guestfs___call_callbacks_void (g, GUESTFS_EVENT_LAUNCH_DONE);
-//    }
-//    debug (g, "recv_from_daemon: received GUESTFS_LAUNCH_FLAG");
-//    return 0;
-//  }
-//  else if (*size_rtn == GUESTFS_CANCEL_FLAG) {
-//    debug (g, "recv_from_daemon: received GUESTFS_CANCEL_FLAG");
-//    return 0;
-//  }
-//  else if (*size_rtn == GUESTFS_PROGRESS_FLAG)
-//    /*FALLTHROUGH*/;
-//  else if (*size_rtn > GUESTFS_MESSAGE_MAX) {
-//    /* If this happens, it's pretty bad and we've probably lost
-//     * synchronization.
-//     */
-//    error (g, _("message length (%u) > maximum possible size (%d)"),
-//           (unsigned) *size_rtn, GUESTFS_MESSAGE_MAX);
-//    return -1;
-//  }
-//
-//  /* Calculate the message size. */
-//  message_size =
-//    *size_rtn != GUESTFS_PROGRESS_FLAG ? *size_rtn : PROGRESS_MESSAGE_SIZE;
-//
-//  /* Allocate the complete buffer, size now known. */
-//  *buf_rtn = safe_malloc (g, message_size);
-//
-//  /* Read the message. */
-//  n = g->conn->ops->read_data (g, g->conn, *buf_rtn, message_size);
-//  if (n == -1) {
-//    free (*buf_rtn);
-//    *buf_rtn = NULL;
-//    return -1;
-//  }
-//  if (n == 0) {
-//    guestfs___unexpected_close_error (g);
-//    child_cleanup (g);
-//    free (*buf_rtn);
-//    *buf_rtn = NULL;
-//    return -1;
-//  }
-//
-//  /* ... it's a normal message (not progress/launch/cancel) so display
-//   * it if we're debugging.
-//   */
-//#ifdef ENABLE_PACKET_DUMP
-//  if (g->verbose) {
-//    ssize_t i, j;
-//
-//    for (i = 0; i < n; i += 16) {
-//      printf ("%04zx: ", i);
-//      for (j = i; j < MIN (i+16, n); ++j)
-//        printf ("%02x ", (*(unsigned char **)buf_rtn)[j]);
-//      for (; j < i+16; ++j)
-//        printf ("   ");
-//      printf ("|");
-//      for (j = i; j < MIN (i+16, n); ++j)
-//        if (c_isprint ((*(char **)buf_rtn)[j]))
-//          printf ("%c", (*(char **)buf_rtn)[j]);
-//        else
-//          printf (".");
-//      for (; j < i+16; ++j)
-//        printf (" ");
-//      printf ("|\n");
-//    }
-//  }
-//#endif
-//
-//  return 0;
-//}
-//
+static int
+recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
+{
+  char lenbuf[4];
+  ssize_t n;
+  XDR xdr;
+  size_t message_size;
+
+  *size_rtn = 0;
+  *buf_rtn = NULL;
+
+  /* RHBZ#914931: Along some (rare) paths, we might have closed the
+   * socket connection just before this function is called, so just
+   * return an error if this happens.
+   */
+  if (!g->conn) {
+    guestfs___unexpected_close_error (g);
+    return -1;
+  }
+
+  /* Read the 4 byte size / flag. */
+  n = g->conn->ops->read_data (g, g->conn, lenbuf, 4);
+  if (n == -1)
+    return -1;
+  if (n == 0) {
+    guestfs___unexpected_close_error (g);
+    child_cleanup (g);
+    return -1;
+  }
+
+  xdrmem_create (&xdr, lenbuf, 4, XDR_DECODE);
+  xdr_uint32_t (&xdr, size_rtn);
+  xdr_destroy (&xdr);
+
+  if (*size_rtn == GUESTFS_LAUNCH_FLAG) {
+    if (g->state != LAUNCHING)
+      error (g, _("received magic signature from guestfsd, but in state %d"),
+             g->state);
+    else {
+      g->state = READY;
+      guestfs___call_callbacks_void (g, GUESTFS_EVENT_LAUNCH_DONE);
+    }
+    debug (g, "recv_from_daemon: received GUESTFS_LAUNCH_FLAG");
+    return 0;
+  }
+  else if (*size_rtn == GUESTFS_CANCEL_FLAG) {
+    debug (g, "recv_from_daemon: received GUESTFS_CANCEL_FLAG");
+    return 0;
+  }
+  else if (*size_rtn == GUESTFS_PROGRESS_FLAG)
+    /*FALLTHROUGH*/;
+  else if (*size_rtn > GUESTFS_MESSAGE_MAX) {
+    /* If this happens, it's pretty bad and we've probably lost
+     * synchronization.
+     */
+    error (g, _("message length (%u) > maximum possible size (%d)"),
+           (unsigned) *size_rtn, GUESTFS_MESSAGE_MAX);
+    return -1;
+  }
+
+  /* Calculate the message size. */
+  message_size =
+    *size_rtn != GUESTFS_PROGRESS_FLAG ? *size_rtn : PROGRESS_MESSAGE_SIZE;
+
+  /* Allocate the complete buffer, size now known. */
+  *buf_rtn = safe_malloc (g, message_size);
+
+  /* Read the message. */
+  n = g->conn->ops->read_data (g, g->conn, *buf_rtn, message_size);
+  if (n == -1) {
+    free (*buf_rtn);
+    *buf_rtn = NULL;
+    return -1;
+  }
+  if (n == 0) {
+    guestfs___unexpected_close_error (g);
+    child_cleanup (g);
+    free (*buf_rtn);
+    *buf_rtn = NULL;
+    return -1;
+  }
+
+  /* ... it's a normal message (not progress/launch/cancel) so display
+   * it if we're debugging.
+   */
+#ifdef ENABLE_PACKET_DUMP
+  if (g->verbose) {
+    ssize_t i, j;
+
+    for (i = 0; i < n; i += 16) {
+      printf ("%04zx: ", i);
+      for (j = i; j < MIN (i+16, n); ++j)
+        printf ("%02x ", (*(unsigned char **)buf_rtn)[j]);
+      for (; j < i+16; ++j)
+        printf ("   ");
+      printf ("|");
+      for (j = i; j < MIN (i+16, n); ++j)
+        if (c_isprint ((*(char **)buf_rtn)[j]))
+          printf ("%c", (*(char **)buf_rtn)[j]);
+        else
+          printf (".");
+      for (; j < i+16; ++j)
+        printf (" ");
+      printf ("|\n");
+    }
+  }
+#endif
+
+  return 0;
+}
+
 int
 guestfs___recv_from_daemon (guestfs_h *g, uint32_t *size_rtn, void **buf_rtn)
 {
- // int r;
+  int r;
 
- //again:
- // r = recv_from_daemon (g, size_rtn, buf_rtn);
- // if (r == -1)
- //   return -1;
+ again:
+  r = recv_from_daemon (g, size_rtn, buf_rtn);
+  if (r == -1)
+    return -1;
 
- // if (*size_rtn == GUESTFS_PROGRESS_FLAG) {
- //   guestfs_progress message;
- //   XDR xdr;
+  if (*size_rtn == GUESTFS_PROGRESS_FLAG) {
+    guestfs_progress message;
+    XDR xdr;
 
- //   xdrmem_create (&xdr, *buf_rtn, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
- //   xdr_guestfs_progress (&xdr, &message);
- //   xdr_destroy (&xdr);
+    xdrmem_create (&xdr, *buf_rtn, PROGRESS_MESSAGE_SIZE, XDR_DECODE);
+    xdr_guestfs_progress (&xdr, &message);
+    xdr_destroy (&xdr);
 
- //   guestfs___progress_message_callback (g, &message);
+    guestfs___progress_message_callback (g, &message);
 
- //   free (*buf_rtn);
- //   *buf_rtn = NULL;
+    free (*buf_rtn);
+    *buf_rtn = NULL;
 
- //   /* Process next message. */
- //   goto again;
- // }
+    /* Process next message. */
+    goto again;
+  }
 
- // if (*size_rtn == GUESTFS_LAUNCH_FLAG || *size_rtn == GUESTFS_CANCEL_FLAG)
- //   return 0;
+  if (*size_rtn == GUESTFS_LAUNCH_FLAG || *size_rtn == GUESTFS_CANCEL_FLAG)
+    return 0;
 
- // /* Got the full message, caller can start processing it. */
- // assert (*buf_rtn != NULL);
+  /* Got the full message, caller can start processing it. */
+  assert (*buf_rtn != NULL);
 
- // return 0;
-
-  return -1;
+  return 0;
 }
-//
-///* Receive a reply. */
-//int
-//guestfs___recv (guestfs_h *g, const char *fn,
-//                guestfs_message_header *hdr,
-//                guestfs_message_error *err,
-//                xdrproc_t xdrp, char *ret)
-//{
-//  XDR xdr;
-//  CLEANUP_FREE void *buf = NULL;
-//  uint32_t size;
-//  int r;
-//
-// again:
-//  r = guestfs___recv_from_daemon (g, &size, &buf);
-//  if (r == -1)
-//    return -1;
-//
-//  /* This can happen if a cancellation happens right at the end
-//   * of us sending a FileIn parameter to the daemon.  Discard.  The
-//   * daemon should send us an error message next.
-//   */
-//  if (size == GUESTFS_CANCEL_FLAG)
-//    goto again;
-//
-//  if (size == GUESTFS_LAUNCH_FLAG) {
-//    error (g, "%s: received unexpected launch flag from daemon when expecting reply", fn);
-//    return -1;
-//  }
-//
-//  xdrmem_create (&xdr, buf, size, XDR_DECODE);
-//
-//  if (!xdr_guestfs_message_header (&xdr, hdr)) {
-//    error (g, "%s: failed to parse reply header", fn);
-//    xdr_destroy (&xdr);
-//    return -1;
-//  }
-//  if (hdr->status == GUESTFS_STATUS_ERROR) {
-//    if (!xdr_guestfs_message_error (&xdr, err)) {
-//      error (g, "%s: failed to parse reply error", fn);
-//      xdr_destroy (&xdr);
-//      return -1;
-//    }
-//  } else {
-//    if (xdrp && ret && !xdrp (&xdr, ret)) {
-//      error (g, "%s: failed to parse reply", fn);
-//      xdr_destroy (&xdr);
-//      return -1;
-//    }
-//  }
-//  xdr_destroy (&xdr);
-//
-//  return 0;
-//}
-//
+
+/* Receive a reply. */
+int
+guestfs___recv (guestfs_h *g, const char *fn,
+                guestfs_message_header *hdr,
+                guestfs_message_error *err,
+                xdrproc_t xdrp, char *ret)
+{
+  XDR xdr;
+  CLEANUP_FREE void *buf = NULL;
+  uint32_t size;
+  int r;
+
+ again:
+  r = guestfs___recv_from_daemon (g, &size, &buf);
+  if (r == -1)
+    return -1;
+
+  /* This can happen if a cancellation happens right at the end
+   * of us sending a FileIn parameter to the daemon.  Discard.  The
+   * daemon should send us an error message next.
+   */
+  if (size == GUESTFS_CANCEL_FLAG)
+    goto again;
+
+  if (size == GUESTFS_LAUNCH_FLAG) {
+    error (g, "%s: received unexpected launch flag from daemon when expecting reply", fn);
+    return -1;
+  }
+
+  xdrmem_create (&xdr, buf, size, XDR_DECODE);
+
+  if (!xdr_guestfs_message_header (&xdr, hdr)) {
+    error (g, "%s: failed to parse reply header", fn);
+    xdr_destroy (&xdr);
+    return -1;
+  }
+  if (hdr->status == GUESTFS_STATUS_ERROR) {
+    if (!xdr_guestfs_message_error (&xdr, err)) {
+      error (g, "%s: failed to parse reply error", fn);
+      xdr_destroy (&xdr);
+      return -1;
+    }
+  } else {
+    if (xdrp && ret && !xdrp (&xdr, ret)) {
+      error (g, "%s: failed to parse reply", fn);
+      xdr_destroy (&xdr);
+      return -1;
+    }
+  }
+  xdr_destroy (&xdr);
+
+  return 0;
+}
+
 ///* Same as guestfs___recv, but it discards the reply message.
 // *
 // * Notes (XXX):

@@ -1345,9 +1345,9 @@ extern GUESTFS_DLL_PUBLIC int guestfs_disk_create_argv (guestfs_h *g, const char
 //#define GUESTFS_HAVE_FALLOCATE64 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_fallocate64 (guestfs_h *g, const char *path, int64_t len);
 //
-//#define GUESTFS_HAVE_FEATURE_AVAILABLE 1
-//extern GUESTFS_DLL_PUBLIC int guestfs_feature_available (guestfs_h *g, char *const *groups);
-//
+#define GUESTFS_HAVE_FEATURE_AVAILABLE 1
+extern GUESTFS_DLL_PUBLIC int guestfs_feature_available (guestfs_h *g, char *const *groups);
+
 //extern GUESTFS_DLL_PUBLIC char **guestfs_fgrep (guestfs_h *g, const char *pattern, const char *path)
 //  GUESTFS_DEPRECATED_BY ("grep");
 //
@@ -1703,9 +1703,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_tmpdir (guestfs_h *g);
 //#define GUESTFS_HAVE_INSPECT_GET_PRODUCT_VARIANT 1
 //extern GUESTFS_DLL_PUBLIC char *guestfs_inspect_get_product_variant (guestfs_h *g, const char *root);
 //
-//#define GUESTFS_HAVE_INSPECT_GET_ROOTS 1
-//extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_get_roots (guestfs_h *g);
-//
+#define GUESTFS_HAVE_INSPECT_GET_ROOTS 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_get_roots (guestfs_h *g);
+
 //#define GUESTFS_HAVE_INSPECT_GET_TYPE 1
 //extern GUESTFS_DLL_PUBLIC char *guestfs_inspect_get_type (guestfs_h *g, const char *root);
 //
@@ -1730,9 +1730,9 @@ extern GUESTFS_DLL_PUBLIC char *guestfs_get_tmpdir (guestfs_h *g);
 //#define GUESTFS_HAVE_INSPECT_LIST_APPLICATIONS2 1
 //extern GUESTFS_DLL_PUBLIC struct guestfs_application2_list *guestfs_inspect_list_applications2 (guestfs_h *g, const char *root);
 //
-//#define GUESTFS_HAVE_INSPECT_OS 1
-//extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_os (guestfs_h *g);
-//
+#define GUESTFS_HAVE_INSPECT_OS 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_inspect_os (guestfs_h *g);
+
 //#define GUESTFS_HAVE_IS_BLOCKDEV 1
 //extern GUESTFS_DLL_PUBLIC int guestfs_is_blockdev (guestfs_h *g, const char *path);
 //
@@ -1934,17 +1934,17 @@ extern GUESTFS_DLL_PUBLIC int guestfs_launch (guestfs_h *g);
 //#define GUESTFS_HAVE_LIST_9P 1
 //extern GUESTFS_DLL_PUBLIC char **guestfs_list_9p (guestfs_h *g);
 //
-//#define GUESTFS_HAVE_LIST_DEVICES 1
-//extern GUESTFS_DLL_PUBLIC char **guestfs_list_devices (guestfs_h *g);
-//
+#define GUESTFS_HAVE_LIST_DEVICES 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_list_devices (guestfs_h *g);
+
 //#define GUESTFS_HAVE_LIST_DISK_LABELS 1
 //extern GUESTFS_DLL_PUBLIC char **guestfs_list_disk_labels (guestfs_h *g);
 //
 //#define GUESTFS_HAVE_LIST_DM_DEVICES 1
 //extern GUESTFS_DLL_PUBLIC char **guestfs_list_dm_devices (guestfs_h *g);
 //
-//#define GUESTFS_HAVE_LIST_FILESYSTEMS 1
-//extern GUESTFS_DLL_PUBLIC char **guestfs_list_filesystems (guestfs_h *g);
+#define GUESTFS_HAVE_LIST_FILESYSTEMS 1
+extern GUESTFS_DLL_PUBLIC char **guestfs_list_filesystems (guestfs_h *g);
 //
 //#define GUESTFS_HAVE_LIST_LDM_PARTITIONS 1
 //extern GUESTFS_DLL_PUBLIC char **guestfs_list_ldm_partitions (guestfs_h *g);
