@@ -15,4 +15,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCPATH) $< -o $@
 
 clean:
-	rm -f *.o gen_small
+	rm -f *.o
