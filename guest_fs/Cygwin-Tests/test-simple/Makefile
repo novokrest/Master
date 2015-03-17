@@ -3,7 +3,8 @@ CXXFLAGS= -c -std=c++11 -Wall -W
 LDFLAGS= -L/usr/local/lib -lguestfs 
 INCPATH= -I.
 SOURCES = \
-	main.cpp
+	main.cpp \
+	test-guestfs.c
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=test-simple
 
