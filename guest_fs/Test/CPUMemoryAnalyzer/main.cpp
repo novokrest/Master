@@ -10,7 +10,7 @@
    */
 
 static const char* UML_KERNEL_NAME = "vmlinux";
-static const char* DISK_IMAGE_NAME = "Debian-Jessie-AMD64-root_fs";
+static const char* DISK_IMAGE_NAME = "Fedora20-AMD64-root_fs";
 static const char* TEST_DIR_PATH = "./test";
 static const char* REMOTE_TEST_DIR_PATH = "/home/test";
 static const char* BIG_FILES_DIR_NAME = "big";
